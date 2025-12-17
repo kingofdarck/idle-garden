@@ -1,0 +1,625 @@
+/**
+ * Plant Configuration Data
+ * Defines all available plant types with their costs, income rates, and growth times
+ */
+
+/**
+ * Plant configuration object containing all plant types
+ * Each plant has: growthTime (ms), income (coins per cycle), cost (resources needed)
+ */
+const PLANT_CONFIGS = {
+    // Уровень 0 - Стартовое (всегда разблокировано)
+    'carrot': {
+        name: 'Морковь',
+        icon: '🥕',
+        growthTime: 5000,
+        income: 10,
+        cost: {
+            coins: 5,
+            seeds: 1,
+            water: 1
+        },
+        description: 'Быстрорастущая стартовая культура',
+        tier: 0,
+        unlockRequirement: null
+    },
+    
+    // Уровень 1 - Разблокируется сбором моркови
+    'lettuce': {
+        name: 'Салат',
+        icon: '🥬',
+        growthTime: 6000,
+        income: 15,
+        cost: {
+            coins: 10,
+            seeds: 2,
+            water: 2
+        },
+        description: 'Быстрый урожай, стабильный доход',
+        tier: 1,
+        unlockRequirement: { plant: 'carrot', harvests: 3 }
+    },
+    
+    'radish': {
+        name: 'Редис',
+        icon: '🌱',
+        growthTime: 7000,
+        income: 18,
+        cost: {
+            coins: 12,
+            seeds: 2,
+            water: 2
+        },
+        description: 'Хрустящий и прибыльный',
+        tier: 1,
+        unlockRequirement: { plant: 'lettuce', harvests: 2 }
+    },
+    
+    // Уровень 2 - Средний уровень
+    'tomato': {
+        name: 'Помидор',
+        icon: '🍅',
+        growthTime: 10000,
+        income: 30,
+        cost: {
+            coins: 20,
+            seeds: 3,
+            water: 3
+        },
+        description: 'Популярная культура с хорошей отдачей',
+        tier: 2,
+        unlockRequirement: { plant: 'radish', harvests: 3 }
+    },
+    
+    'cucumber': {
+        name: 'Огурец',
+        icon: '🥒',
+        growthTime: 11000,
+        income: 35,
+        cost: {
+            coins: 25,
+            seeds: 3,
+            water: 3
+        },
+        description: 'Прохладная и освежающая прибыль',
+        tier: 2,
+        unlockRequirement: { plant: 'tomato', harvests: 2 }
+    },
+    
+    'pepper': {
+        name: 'Перец',
+        icon: '🌶️',
+        growthTime: 12000,
+        income: 40,
+        cost: {
+            coins: 30,
+            seeds: 4,
+            water: 4
+        },
+        description: 'Острая прибыль с умеренным ростом',
+        tier: 2,
+        unlockRequirement: { plant: 'cucumber', harvests: 2 }
+    },
+    
+    'broccoli': {
+        name: 'Брокколи',
+        icon: '🥦',
+        growthTime: 13000,
+        income: 45,
+        cost: {
+            coins: 35,
+            seeds: 4,
+            water: 4
+        },
+        description: 'Здоровый и богатый',
+        tier: 2,
+        unlockRequirement: { plant: 'pepper', harvests: 2 }
+    },
+    
+    // Уровень 3 - Продвинутые растения
+    'eggplant': {
+        name: 'Баклажан',
+        icon: '🍆',
+        growthTime: 15000,
+        income: 60,
+        cost: {
+            coins: 50,
+            seeds: 5,
+            water: 5
+        },
+        description: 'Медленный рост, высокий урожай',
+        tier: 3,
+        unlockRequirement: { plant: 'broccoli', harvests: 3 }
+    },
+    
+    'potato': {
+        name: 'Картофель',
+        icon: '🥔',
+        growthTime: 16000,
+        income: 70,
+        cost: {
+            coins: 60,
+            seeds: 6,
+            water: 6
+        },
+        description: 'Подземное сокровище',
+        tier: 3,
+        unlockRequirement: { plant: 'eggplant', harvests: 2 }
+    },
+    
+    'corn': {
+        name: 'Кукуруза',
+        icon: '🌽',
+        growthTime: 18000,
+        income: 90,
+        cost: {
+            coins: 80,
+            seeds: 7,
+            water: 7
+        },
+        description: 'Премиальная культура с отличной отдачей',
+        tier: 3,
+        unlockRequirement: { plant: 'potato', harvests: 2 }
+    },
+    
+    'onion': {
+        name: 'Лук',
+        icon: '🧅',
+        growthTime: 20000,
+        income: 110,
+        cost: {
+            coins: 100,
+            seeds: 8,
+            water: 8
+        },
+        description: 'Слои прибыли',
+        tier: 3,
+        unlockRequirement: { plant: 'corn', harvests: 2 }
+    },
+    
+    // Уровень 4 - Премиальные растения
+    'pumpkin': {
+        name: 'Тыква',
+        icon: '🎃',
+        growthTime: 25000,
+        income: 150,
+        cost: {
+            coins: 150,
+            seeds: 10,
+            water: 10
+        },
+        description: 'Сезонный фаворит, высокая ценность',
+        tier: 4,
+        unlockRequirement: { plant: 'onion', harvests: 3 }
+    },
+    
+    'watermelon': {
+        name: 'Арбуз',
+        icon: '🍉',
+        growthTime: 30000,
+        income: 200,
+        cost: {
+            coins: 200,
+            seeds: 12,
+            water: 12
+        },
+        description: 'Большой фрукт, большая прибыль',
+        tier: 4,
+        unlockRequirement: { plant: 'pumpkin', harvests: 2 }
+    },
+    
+    'cauliflower': {
+        name: 'Цветная капуста',
+        icon: '🥬',
+        growthTime: 32000,
+        income: 220,
+        cost: {
+            coins: 220,
+            seeds: 13,
+            water: 13
+        },
+        description: 'Белое золото сада',
+        tier: 4,
+        unlockRequirement: { plant: 'watermelon', harvests: 2 }
+    },
+    
+    // Уровень 5 - Роскошные растения
+    'strawberry': {
+        name: 'Клубника',
+        icon: '🍓',
+        growthTime: 35000,
+        income: 280,
+        cost: {
+            coins: 280,
+            seeds: 15,
+            water: 15
+        },
+        description: 'Сладкая отдача для терпеливых садоводов',
+        tier: 5,
+        unlockRequirement: { plant: 'cauliflower', harvests: 3 }
+    },
+    
+    'banana': {
+        name: 'Банан',
+        icon: '🍌',
+        growthTime: 38000,
+        income: 320,
+        cost: {
+            coins: 320,
+            seeds: 16,
+            water: 16
+        },
+        description: 'Тропическое наслаждение',
+        tier: 5,
+        unlockRequirement: { plant: 'strawberry', harvests: 2 }
+    },
+    
+    'grape': {
+        name: 'Виноград',
+        icon: '🍇',
+        growthTime: 40000,
+        income: 380,
+        cost: {
+            coins: 380,
+            seeds: 18,
+            water: 18
+        },
+        description: 'Роскошная культура для продвинутых садоводов',
+        tier: 5,
+        unlockRequirement: { plant: 'banana', harvests: 2 }
+    },
+    
+    'apple': {
+        name: 'Яблоко',
+        icon: '🍎',
+        growthTime: 42000,
+        income: 420,
+        cost: {
+            coins: 420,
+            seeds: 20,
+            water: 20
+        },
+        description: 'Яблоко в день отгоняет бедность',
+        tier: 5,
+        unlockRequirement: { plant: 'grape', harvests: 2 }
+    },
+    
+    // Уровень 6 - Кристальные растения (требуют кристаллы)
+    'blueberry': {
+        name: 'Черника',
+        icon: '🫐',
+        growthTime: 45000,
+        income: 500,
+        cost: {
+            coins: 500,
+            seeds: 25,
+            water: 25,
+            gems: 1
+        },
+        description: 'Редкая ягода с премиальной ценностью',
+        tier: 6,
+        unlockRequirement: { plant: 'apple', harvests: 3 }
+    },
+    
+    'cherry': {
+        name: 'Вишня',
+        icon: '🍒',
+        growthTime: 50000,
+        income: 650,
+        cost: {
+            coins: 650,
+            seeds: 30,
+            water: 30,
+            gems: 2
+        },
+        description: 'Сладкая прибыль для инвесторов в кристаллы',
+        tier: 6,
+        unlockRequirement: { plant: 'blueberry', harvests: 2 }
+    },
+    
+    'orange': {
+        name: 'Апельсин',
+        icon: '🍊',
+        growthTime: 55000,
+        income: 750,
+        cost: {
+            coins: 750,
+            seeds: 35,
+            water: 35,
+            gems: 3
+        },
+        description: 'Цитрусовая сенсация',
+        tier: 6,
+        unlockRequirement: { plant: 'cherry', harvests: 2 }
+    },
+    
+    'peach': {
+        name: 'Персик',
+        icon: '🍑',
+        growthTime: 60000,
+        income: 900,
+        cost: {
+            coins: 900,
+            seeds: 40,
+            water: 40,
+            gems: 5
+        },
+        description: 'Сочная отдача с терпением',
+        tier: 6,
+        unlockRequirement: { plant: 'orange', harvests: 2 }
+    },
+    
+    // Уровень 7 - Элитные растения (требуют удобрение)
+    'pineapple': {
+        name: 'Ананас',
+        icon: '🍍',
+        growthTime: 70000,
+        income: 1200,
+        cost: {
+            coins: 1200,
+            seeds: 50,
+            water: 50,
+            gems: 8,
+            fertilizer: 2
+        },
+        description: 'Тропическое сокровище для элитных садоводов',
+        tier: 7,
+        unlockRequirement: { plant: 'peach', harvests: 3 }
+    },
+    
+    'mango': {
+        name: 'Манго',
+        icon: '🥭',
+        growthTime: 80000,
+        income: 1600,
+        cost: {
+            coins: 1600,
+            seeds: 60,
+            water: 60,
+            gems: 12,
+            fertilizer: 3
+        },
+        description: 'Экзотический фрукт с массивной отдачей',
+        tier: 7,
+        unlockRequirement: { plant: 'pineapple', harvests: 2 }
+    },
+    
+    'lemon': {
+        name: 'Лимон',
+        icon: '🍋',
+        growthTime: 85000,
+        income: 1800,
+        cost: {
+            coins: 1800,
+            seeds: 65,
+            water: 65,
+            gems: 15,
+            fertilizer: 4
+        },
+        description: 'Кислая цена, сладкая прибыль',
+        tier: 7,
+        unlockRequirement: { plant: 'mango', harvests: 2 }
+    },
+    
+    'coconut': {
+        name: 'Кокос',
+        icon: '🥥',
+        growthTime: 90000,
+        income: 2200,
+        cost: {
+            coins: 2200,
+            seeds: 70,
+            water: 70,
+            gems: 18,
+            fertilizer: 5
+        },
+        description: 'Прибыль райского острова',
+        tier: 7,
+        unlockRequirement: { plant: 'lemon', harvests: 2 }
+    },
+    
+    // Уровень 8 - Легендарные растения
+    'dragonfruit': {
+        name: 'Драконий фрукт',
+        icon: '🐉',
+        growthTime: 100000,
+        income: 3000,
+        cost: {
+            coins: 3000,
+            seeds: 80,
+            water: 80,
+            gems: 25,
+            fertilizer: 8
+        },
+        description: 'Мифический фрукт легенд',
+        tier: 8,
+        unlockRequirement: { plant: 'coconut', harvests: 3 }
+    },
+    
+    'goldenfruit': {
+        name: 'Золотой фрукт',
+        icon: '🌟',
+        growthTime: 120000,
+        income: 4500,
+        cost: {
+            coins: 4500,
+            seeds: 100,
+            water: 100,
+            gems: 40,
+            fertilizer: 12
+        },
+        description: 'Окончательный урожай для мастеров-садоводов',
+        tier: 8,
+        unlockRequirement: { plant: 'dragonfruit', harvests: 2 }
+    },
+    
+    'crystalrose': {
+        name: 'Кристальная роза',
+        icon: '🌹',
+        growthTime: 150000,
+        income: 7000,
+        cost: {
+            coins: 7000,
+            seeds: 120,
+            water: 120,
+            gems: 60,
+            fertilizer: 20
+        },
+        description: 'Легендарный цветок стоимостью целое состояние',
+        tier: 8,
+        unlockRequirement: { plant: 'goldenfruit', harvests: 2 }
+    },
+    
+    'starfruit': {
+        name: 'Звездный фрукт',
+        icon: '⭐',
+        growthTime: 180000,
+        income: 10000,
+        cost: {
+            coins: 10000,
+            seeds: 150,
+            water: 150,
+            gems: 80,
+            fertilizer: 30
+        },
+        description: 'Небесный урожай космической ценности',
+        tier: 8,
+        unlockRequirement: { plant: 'crystalrose', harvests: 2 }
+    },
+    
+    // Уровень 9 - Космические растения
+    'moonflower': {
+        name: 'Лунный цветок',
+        icon: '🌙',
+        growthTime: 210000,
+        income: 15000,
+        cost: {
+            coins: 15000,
+            seeds: 200,
+            water: 200,
+            gems: 100,
+            fertilizer: 40
+        },
+        description: 'Цветет под лунным светом с астрономической ценностью',
+        tier: 9,
+        unlockRequirement: { plant: 'starfruit', harvests: 3 }
+    },
+    
+    'sunflower': {
+        name: 'Солнечный цветок',
+        icon: '🌻',
+        growthTime: 240000,
+        income: 20000,
+        cost: {
+            coins: 20000,
+            seeds: 250,
+            water: 250,
+            gems: 120,
+            fertilizer: 50
+        },
+        description: 'Излучает чистую золотую прибыль',
+        tier: 9,
+        unlockRequirement: { plant: 'moonflower', harvests: 2 }
+    },
+    
+    'cosmicorchid': {
+        name: 'Космическая орхидея',
+        icon: '🪐',
+        growthTime: 300000,
+        income: 30000,
+        cost: {
+            coins: 30000,
+            seeds: 300,
+            water: 300,
+            gems: 150,
+            fertilizer: 75
+        },
+        description: 'Редчайший цветок во вселенной',
+        tier: 9,
+        unlockRequirement: { plant: 'sunflower', harvests: 3 }
+    }
+};
+
+/**
+ * Get plant configuration by type
+ * @param {string} plantType - The plant type identifier
+ * @returns {Object|null} Plant configuration or null if not found
+ */
+function getPlantConfig(plantType) {
+    return PLANT_CONFIGS[plantType] || null;
+}
+
+/**
+ * Get all available plant types
+ * @returns {string[]} Array of plant type identifiers
+ */
+function getAllPlantTypes() {
+    return Object.keys(PLANT_CONFIGS);
+}
+
+/**
+ * Validate if a plant type exists
+ * @param {string} plantType - The plant type to validate
+ * @returns {boolean} True if plant type exists
+ */
+function isValidPlantType(plantType) {
+    return plantType in PLANT_CONFIGS;
+}
+
+/**
+ * Get plants sorted by cost (cheapest first)
+ * @returns {Array} Array of plant configurations sorted by total cost
+ */
+function getPlantsSortedByCost() {
+    return Object.entries(PLANT_CONFIGS)
+        .map(([type, config]) => ({ type, ...config }))
+        .sort((a, b) => {
+            const costA = a.cost.coins + a.cost.seeds + a.cost.water;
+            const costB = b.cost.coins + b.cost.seeds + b.cost.water;
+            return costA - costB;
+        });
+}
+
+/**
+ * Get plants sorted by income efficiency (income per second)
+ * @returns {Array} Array of plant configurations sorted by efficiency
+ */
+function getPlantsSortedByEfficiency() {
+    return Object.entries(PLANT_CONFIGS)
+        .map(([type, config]) => ({
+            type,
+            ...config,
+            efficiency: (config.income / (config.growthTime / 1000))
+        }))
+        .sort((a, b) => b.efficiency - a.efficiency);
+}
+
+/**
+ * Get the cheapest plant configuration
+ * @returns {Object} Cheapest plant configuration with type
+ */
+function getCheapestPlant() {
+    const sortedPlants = getPlantsSortedByCost();
+    return sortedPlants.length > 0 ? sortedPlants[0] : null;
+}
+
+// Export for use in other modules
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        PLANT_CONFIGS,
+        getPlantConfig,
+        getAllPlantTypes,
+        isValidPlantType,
+        getPlantsSortedByCost,
+        getPlantsSortedByEfficiency,
+        getCheapestPlant
+    };
+} else if (typeof window !== 'undefined') {
+    window.PLANT_CONFIGS = PLANT_CONFIGS;
+    window.getPlantConfig = getPlantConfig;
+    window.getAllPlantTypes = getAllPlantTypes;
+    window.isValidPlantType = isValidPlantType;
+    window.getPlantsSortedByCost = getPlantsSortedByCost;
+    window.getPlantsSortedByEfficiency = getPlantsSortedByEfficiency;
+    window.getCheapestPlant = getCheapestPlant;
+}

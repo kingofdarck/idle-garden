@@ -1,0 +1,1792 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+    min-height: 100vh;
+    color: #2e7d32;
+}
+
+/* Game container */
+.game-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+/* Header */
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.game-header h1 {
+    font-size: 2rem;
+    color: #1b5e20;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 0;
+}
+
+.player-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.player-name {
+    font-size: 0.9rem;
+    color: #4caf50;
+    font-weight: 600;
+    padding: 4px 8px;
+    background: rgba(76, 175, 80, 0.1);
+    border-radius: 6px;
+}
+
+.edit-name-btn {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.edit-name-btn:hover {
+    background: rgba(76, 175, 80, 0.2);
+}
+
+.game-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.control-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #4caf50;
+    color: white;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.control-btn:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+}
+
+.control-btn.reset {
+    background: #f44336;
+}
+
+.control-btn.reset:hover {
+    background: #da190b;
+}
+
+/* Main game area */
+.game-main {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-template-rows: auto auto 1fr;
+    gap: 20px;
+    grid-template-areas: 
+        "resources stats"
+        "garden garden"
+        "shop upgrades";
+}
+
+/* Resource panel */
+.resources-panel {
+    grid-area: resources;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.resource-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.resource-icon {
+    font-size: 1.3rem;
+}
+
+.resource-label {
+    font-weight: 600;
+    min-width: 60px;
+}
+
+.resource-value {
+    font-weight: bold;
+    color: #1b5e20;
+    background: #e8f5e8;
+    padding: 4px 8px;
+    border-radius: 6px;
+    min-width: 60px;
+    text-align: center;
+}
+
+/* Stats panel */
+.stats-panel {
+    grid-area: stats;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.stat-label {
+    font-weight: 600;
+}
+
+.stat-value {
+    font-weight: bold;
+    color: #1b5e20;
+    background: #e8f5e8;
+    padding: 4px 12px;
+    border-radius: 6px;
+}
+
+/* Garden section */
+.garden-section {
+    grid-area: garden;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.garden-section h2 {
+    margin-bottom: 15px;
+    color: #1b5e20;
+}
+
+.garden-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 10px;
+    max-width: 100%;
+}
+
+.garden-slot {
+    aspect-ratio: 1;
+    border: 2px dashed #81c784;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #f1f8e9;
+    position: relative;
+    min-height: 80px;
+}
+
+.garden-slot:hover {
+    border-color: #4caf50;
+    background: #e8f5e8;
+    transform: scale(1.05);
+}
+
+.garden-slot.occupied {
+    border: 2px solid #4caf50;
+    background: rgba(255, 255, 255, 0.8) !important;
+    cursor: default;
+}
+
+.garden-slot.occupied:hover {
+    background: rgba(255, 255, 255, 0.8) !important;
+    border-color: #2e7d32;
+    transform: none;
+}
+
+.garden-slot.plantable {
+    border-color: #4caf50;
+    background: #e8f5e8;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+}
+
+.garden-slot.plantable:hover {
+    border-color: #2e7d32;
+    background: #c8e6c9;
+    transform: scale(1.1);
+}
+
+.plant-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    padding: 4px;
+    z-index: 10;
+    background: transparent;
+}
+
+.plant-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    z-index: 20;
+    position: relative;
+}
+
+.plant-name {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #2e7d32;
+    text-align: center;
+    margin-top: 2px;
+}
+
+.empty-indicator {
+    color: #ccc;
+    font-size: 1.5rem;
+    user-select: none;
+}
+
+.plant-icon {
+    font-size: 1.8rem;
+}
+
+.growth-progress {
+    width: 100%;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 2px 0;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #4caf50;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+/* Sell plant button */
+.sell-plant-btn {
+    width: 100%;
+    height: 20px;
+    border: 2px solid #fff;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    color: #fff;
+    font-size: 9px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 25;
+    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.4);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    margin-top: 2px;
+    animation: sellButtonPulse 2s ease-in-out infinite;
+}
+
+.sell-plant-btn:hover {
+    background: linear-gradient(135deg, #ff8a65, #ffb74d);
+    transform: scale(1.2);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.6);
+    border-color: #ffeb3b;
+}
+
+.sell-plant-btn:active {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.8);
+}
+
+/* Пульсирующая анимация для привлечения внимания */
+@keyframes sellButtonPulse {
+    0% { 
+        box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 0 6px 20px rgba(255, 107, 53, 0.7);
+        transform: scale(1.05);
+    }
+    100% { 
+        box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+        transform: scale(1);
+    }
+}
+
+
+
+/* Подсветка растения при наведении для продажи */
+.plant-display:hover {
+    background: rgba(255, 107, 53, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.plant-display:hover .sell-plant-btn {
+    animation: none;
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.8);
+}
+
+/* Shop section */
+.shop-section {
+    grid-area: shop;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.shop-section h2 {
+    margin-bottom: 15px;
+    color: #1b5e20;
+}
+
+.shop-grid {
+    display: grid;
+    gap: 15px;
+}
+
+.shop-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #fafafa;
+}
+
+.shop-item:hover {
+    border-color: #4caf50;
+    background: #f1f8e9;
+    transform: translateY(-2px);
+}
+
+.shop-item.affordable {
+    border-color: #4caf50;
+    background: #e8f5e8;
+}
+
+.shop-item.selected {
+    border-color: #2e7d32;
+    background: #c8e6c9;
+    box-shadow: 0 0 10px rgba(46, 125, 50, 0.3);
+}
+
+.shop-item-icon {
+    font-size: 2rem;
+    min-width: 40px;
+}
+
+.shop-item-info {
+    flex: 1;
+}
+
+.shop-item-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #1b5e20;
+    margin-bottom: 5px;
+}
+
+.shop-item-cost {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.shop-item-income {
+    font-size: 0.9rem;
+    color: #4caf50;
+    font-weight: 600;
+}
+
+.shop-item-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.shop-item-description {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 10px;
+    font-style: italic;
+}
+
+.cost-label, .income-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.cost-breakdown {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.cost-item {
+    font-size: 0.85rem;
+    background: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.income-value {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #4caf50;
+}
+
+.affordability-indicator {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin: 8px 0;
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.affordability-indicator.affordable {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.affordability-indicator.unaffordable {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.shop-purchase-btn {
+    width: 100%;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #4caf50;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.shop-purchase-btn:hover:not(:disabled) {
+    background: #45a049;
+    transform: translateY(-1px);
+}
+
+.shop-purchase-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.shop-item.unaffordable {
+    opacity: 0.6;
+    border-color: #ffcdd2;
+}
+
+/* Upgrades section */
+.upgrades-section {
+    grid-area: upgrades;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.upgrades-section h2 {
+    margin-bottom: 15px;
+    color: #1b5e20;
+}
+
+.upgrades-grid {
+    display: grid;
+    gap: 15px;
+}
+
+.upgrade-item {
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    background: #fafafa;
+}
+
+.upgrade-item:hover {
+    border-color: #ff9800;
+    background: #fff3e0;
+    transform: translateY(-2px);
+}
+
+.upgrade-item.affordable {
+    border-color: #ff9800;
+    background: #fff3e0;
+}
+
+.upgrade-item.unaffordable {
+    opacity: 0.6;
+    border-color: #ffcdd2;
+}
+
+.upgrade-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.upgrade-icon {
+    font-size: 1.5rem;
+}
+
+.upgrade-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #e65100;
+}
+
+.upgrade-description {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 10px;
+    font-style: italic;
+}
+
+.upgrade-level-info {
+    margin-bottom: 10px;
+}
+
+.upgrade-level {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.upgrade-effect {
+    font-size: 0.85rem;
+    color: #ff9800;
+    font-weight: 600;
+}
+
+.upgrade-purchase-section {
+    margin-top: 10px;
+}
+
+.upgrade-cost {
+    margin-bottom: 15px;
+    padding: 12px;
+    background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+    border: 2px solid #ff9800;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.2);
+}
+
+.upgrade-cost .cost-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #e65100;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.upgrade-cost .cost-breakdown {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.upgrade-cost .cost-item {
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.upgrade-purchase-btn {
+    width: 100%;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #ff9800;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upgrade-purchase-btn:hover:not(:disabled) {
+    background: #f57c00;
+    transform: translateY(-1px);
+}
+
+.upgrade-purchase-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.upgrade-max-level {
+    text-align: center;
+    font-weight: 600;
+    color: #4caf50;
+    background: #e8f5e8;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.affordability-indicator.max-level {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+/* Notifications */
+.notifications-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 300px;
+}
+
+.notification {
+    background: rgba(76, 175, 80, 0.95);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.3s ease;
+    cursor: pointer;
+}
+
+.notification.error {
+    background: rgba(244, 67, 54, 0.95);
+}
+
+.notification.info {
+    background: rgba(33, 150, 243, 0.95);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+    text-align: center;
+}
+
+.modal-content h3 {
+    margin-bottom: 15px;
+    color: #1b5e20;
+}
+
+.modal-content p {
+    margin-bottom: 20px;
+    color: #666;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-danger {
+    background: #f44336;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #da190b;
+}
+
+.btn-secondary {
+    background: #e0e0e0;
+    color: #333;
+}
+
+.btn-secondary:hover {
+    background: #d0d0d0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .game-container {
+        padding: 10px;
+    }
+    
+    .game-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .game-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .game-main {
+        grid-template-columns: 1fr;
+        grid-template-areas: 
+            "resources"
+            "stats"
+            "garden"
+            "shop"
+            "upgrades";
+    }
+    
+    .garden-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .notifications-container {
+        left: 10px;
+        right: 10px;
+        max-width: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-header h1 {
+        font-size: 1.3rem;
+    }
+    
+    .control-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .garden-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .garden-slot {
+        min-height: 60px;
+    }
+    
+    .plant-icon {
+        font-size: 1.3rem;
+    }
+    
+    .sell-plant-btn {
+        font-size: 8px;
+        height: 18px;
+    }
+    
+    .shop-item, .upgrade-item {
+        padding: 10px;
+    }
+    
+    .modal-content {
+        margin: 20px;
+        padding: 20px;
+    }
+}
+
+/* Resource change animations */
+.resource-increase {
+    animation: resourceIncrease 0.6s ease;
+}
+
+.resource-decrease {
+    animation: resourceDecrease 0.6s ease;
+}
+
+@keyframes resourceIncrease {
+    0% { transform: scale(1); color: inherit; }
+    50% { transform: scale(1.2); color: #4CAF50; }
+    100% { transform: scale(1); color: inherit; }
+}
+
+@keyframes resourceDecrease {
+    0% { transform: scale(1); color: inherit; }
+    50% { transform: scale(0.9); color: #f44336; }
+    100% { transform: scale(1); color: inherit; }
+}
+
+.resource-change-indicator {
+    font-weight: bold;
+    font-size: 14px;
+    pointer-events: none;
+    z-index: 1000;
+    transition: all 1s ease-out;
+}
+
+/* Animation utilities */
+.fade-in {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.bounce {
+    animation: bounce 0.6s ease;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+.pulse {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+/* 
+Notification System Styles */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 350px;
+    pointer-events: none;
+}
+
+.notification {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    margin-bottom: 10px;
+    overflow: hidden;
+    transform: translateX(100%);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: auto;
+    cursor: pointer;
+    position: relative;
+    border-left: 4px solid #2196f3;
+}
+
+.notification.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.notification.dismissing {
+    transform: translateX(100%);
+    opacity: 0;
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    gap: 10px;
+}
+
+.notification-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.notification-message {
+    flex: 1;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #333;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: #666;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.notification-close:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.notification-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: rgba(0, 0, 0, 0.2);
+    width: 100%;
+    transform-origin: left;
+    animation: notification-progress 3s linear forwards;
+}
+
+@keyframes notification-progress {
+    from {
+        transform: scaleX(1);
+    }
+    to {
+        transform: scaleX(0);
+    }
+}
+
+/* Notification type styles */
+.notification-success {
+    border-left-color: #4caf50;
+}
+
+.notification-success .notification-progress {
+    background: #4caf50;
+}
+
+.notification-error {
+    border-left-color: #f44336;
+}
+
+.notification-error .notification-progress {
+    background: #f44336;
+}
+
+.notification-warning {
+    border-left-color: #ff9800;
+}
+
+.notification-warning .notification-progress {
+    background: #ff9800;
+}
+
+.notification-info {
+    border-left-color: #2196f3;
+}
+
+.notification-info .notification-progress {
+    background: #2196f3;
+}
+
+.notification-income {
+    border-left-color: #ffc107;
+    background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+}
+
+.notification-income .notification-progress {
+    background: #ffc107;
+}
+
+.notification-income .notification-icon {
+    animation: coin-bounce 0.6s ease-out;
+}
+
+@keyframes coin-bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-8px);
+    }
+    60% {
+        transform: translateY(-4px);
+    }
+}
+
+/* Responsive design for notifications */
+@media (max-width: 768px) {
+    .notification-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    .notification {
+        transform: translateY(-100%);
+    }
+    
+    .notification.show {
+        transform: translateY(0);
+    }
+    
+    .notification.dismissing {
+        transform: translateY(-100%);
+    }
+}
+
+/* Animation for resource changes */
+.resource-increase {
+    animation: resource-pulse-green 0.6s ease-out;
+}
+
+.resource-decrease {
+    animation: resource-pulse-red 0.6s ease-out;
+}
+
+@keyframes resource-pulse-green {
+    0% { transform: scale(1); color: inherit; }
+    50% { transform: scale(1.1); color: #4caf50; }
+    100% { transform: scale(1); color: inherit; }
+}
+
+@keyframes resource-pulse-red {
+    0% { transform: scale(1); color: inherit; }
+    50% { transform: scale(1.1); color: #f44336; }
+    100% { transform: scale(1); color: inherit; }
+}
+
+.resource-change-indicator {
+    font-weight: bold;
+    font-size: 14px;
+    pointer-events: none;
+    z-index: 1000;
+}/* Enhanc
+ed UI Visual Feedback */
+
+/* Button feedback animations */
+.control-btn, .shop-purchase-btn, .upgrade-purchase-btn {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.control-btn:hover, .shop-purchase-btn:hover, .upgrade-purchase-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.control-btn:active, .shop-purchase-btn:active, .upgrade-purchase-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Ripple effect for buttons */
+.control-btn::after, .shop-purchase-btn::after, .upgrade-purchase-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s;
+}
+
+.control-btn:active::after, .shop-purchase-btn:active::after, .upgrade-purchase-btn:active::after {
+    width: 200px;
+    height: 200px;
+}
+
+/* Resource counter animations */
+.resource-item {
+    transition: all 0.3s ease;
+}
+
+.resource-item:hover {
+    transform: scale(1.05);
+}
+
+.resource-value {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+/* Income pulse animation */
+@keyframes income-pulse {
+    0% { 
+        transform: scale(1);
+        color: inherit;
+    }
+    50% { 
+        transform: scale(1.15);
+        color: #4caf50;
+        text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+    }
+    100% { 
+        transform: scale(1);
+        color: inherit;
+    }
+}
+
+.income-animation {
+    animation: income-pulse 0.6s ease-out;
+}
+
+/* Garden slot visual feedback - объединено с основными стилями выше */
+
+/* Plant placement animation */
+@keyframes plant-place {
+    0% {
+        transform: scale(0) rotate(180deg);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2) rotate(90deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+.plant-display {
+    animation: plant-place 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Growth progress bar animations */
+.progress-bar {
+    transition: width 0.3s ease-out;
+    background: linear-gradient(90deg, #4caf50 0%, #8bc34a 100%);
+    height: 100%;
+    border-radius: inherit;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: progress-shine 2s infinite;
+}
+
+@keyframes progress-shine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Shop item visual feedback */
+.shop-item {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.shop-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.shop-item.selected {
+    border: 2px solid #4caf50;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+}
+
+.shop-item.affordable {
+    border-left: 4px solid #4caf50;
+}
+
+.shop-item.unaffordable {
+    border-left: 4px solid #f44336;
+    opacity: 0.7;
+}
+
+/* Upgrade item visual feedback */
+.upgrade-item {
+    transition: all 0.3s ease;
+}
+
+.upgrade-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.upgrade-item.affordable {
+    border-left: 4px solid #2196f3;
+}
+
+.upgrade-item.unaffordable {
+    border-left: 4px solid #f44336;
+    opacity: 0.7;
+}
+
+/* Affordability indicators */
+.affordability-indicator {
+    transition: all 0.3s ease;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+.affordability-indicator.affordable {
+    background: rgba(76, 175, 80, 0.1);
+    color: #2e7d32;
+}
+
+.affordability-indicator.unaffordable {
+    background: rgba(244, 67, 54, 0.1);
+    color: #c62828;
+}
+
+/* Statistics display animations */
+.statistics-item {
+    transition: all 0.3s ease;
+}
+
+.statistics-item:hover {
+    transform: scale(1.05);
+}
+
+.income-display, .plant-count-display {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+/* Floating number animation for income */
+@keyframes float-up {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+}
+
+.floating-income {
+    position: absolute;
+    color: #4caf50;
+    font-weight: bold;
+    font-size: 0.9rem;
+    pointer-events: none;
+    animation: float-up 1.5s ease-out forwards;
+    z-index: 100;
+}
+
+/* Loading and transition states */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #4caf50;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Success/error state animations */
+@keyframes success-flash {
+    0%, 100% { background-color: transparent; }
+    50% { background-color: rgba(76, 175, 80, 0.2); }
+}
+
+@keyframes error-flash {
+    0%, 100% { background-color: transparent; }
+    50% { background-color: rgba(244, 67, 54, 0.2); }
+}
+
+.success-flash {
+    animation: success-flash 0.6s ease-out;
+}
+
+.error-flash {
+    animation: error-flash 0.6s ease-out;
+}
+
+/* Responsive enhancements */
+@media (max-width: 768px) {
+    .control-btn:hover, .shop-purchase-btn:hover, .upgrade-purchase-btn:hover {
+        transform: none; /* Disable hover effects on mobile */
+    }
+    
+    .garden-slot:hover, .shop-item:hover, .upgrade-item:hover {
+        transform: none;
+    }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus indicators for keyboard navigation */
+.control-btn:focus, .shop-purchase-btn:focus, .upgrade-purchase-btn:focus {
+    outline: 2px solid #4caf50;
+    outline-offset: 2px;
+}
+
+.garden-slot:focus {
+    outline: 2px solid #4caf50;
+    outline-offset: 2px;
+}
+/* Sou
+nd toggle states */
+.control-btn.sound-enabled {
+    background: #4caf50;
+    color: white;
+}
+
+.control-btn.sound-disabled {
+    background: #757575;
+    color: #e0e0e0;
+}
+
+.control-btn.sound-enabled:hover {
+    background: #45a049;
+}
+
+.control-btn.sound-disabled:hover {
+    background: #616161;
+}
+
+/* Sound toggle animation */
+.control-btn {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}/
+* Enhanced mobile optimizations */
+@media (max-width: 768px) {
+    /* Larger touch targets for mobile */
+    .garden-slot {
+        min-height: 70px;
+        min-width: 70px;
+    }
+    
+    .shop-purchase-btn, .upgrade-purchase-btn {
+        min-height: 44px; /* iOS recommended minimum touch target */
+        padding: 12px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .control-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Improved spacing for mobile */
+    .shop-grid, .upgrades-grid {
+        gap: 15px;
+    }
+    
+    .garden-grid {
+        gap: 8px;
+        padding: 15px;
+    }
+    
+    /* Better text readability on mobile */
+    .resource-value, .stat-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    
+    .shop-item-name, .upgrade-name {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    
+    /* Improved modal for mobile */
+    .modal-content {
+        width: 90%;
+        max-width: 400px;
+        margin: 10% auto;
+    }
+    
+    .modal-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .modal-buttons .btn {
+        width: 100%;
+        min-height: 44px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Extra small screens */
+    .game-header {
+        padding: 10px 15px;
+    }
+    
+    .game-controls {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .control-btn {
+        flex: 1;
+        min-width: 80px;
+        font-size: 0.75rem;
+    }
+    
+    .garden-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .garden-slot {
+        min-height: 80px;
+    }
+    
+    .resources-panel, .stats-panel {
+        padding: 10px;
+    }
+    
+    .resource-item, .stat-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 2px;
+    }
+    
+    .resource-icon {
+        font-size: 1.2rem;
+    }
+    
+    .shop-grid, .upgrades-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Touch-specific enhancements */
+@media (hover: none) and (pointer: coarse) {
+    /* Remove hover effects on touch devices */
+    .garden-slot:hover,
+    .shop-item:hover,
+    .upgrade-item:hover,
+    .control-btn:hover,
+    .shop-purchase-btn:hover,
+    .upgrade-purchase-btn:hover {
+        transform: none;
+        box-shadow: inherit;
+    }
+    
+    /* Add active states for touch feedback */
+    .garden-slot:active,
+    .shop-purchase-btn:active,
+    .upgrade-purchase-btn:active,
+    .control-btn:active {
+        transform: scale(0.95);
+        transition: transform 0.1s ease;
+    }
+    
+    /* Larger tap targets */
+    .garden-slot {
+        padding: 8px;
+    }
+}
+
+/* Landscape orientation on mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+    .game-header {
+        flex-direction: row;
+        padding: 8px 15px;
+    }
+    
+    .game-header h1 {
+        font-size: 1.2rem;
+    }
+    
+    .control-btn {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+    }
+    
+    .game-main {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: 
+            "resources stats"
+            "garden garden"
+            "shop upgrades";
+        gap: 10px;
+    }
+    
+    .garden-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .plant-icon, .resource-icon {
+        /* Ensure icons look crisp on high DPI displays */
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: linear-gradient(135deg, #1a2e1a 0%, #0d4f0d 100%);
+        color: #a5d6a7;
+    }
+    
+    .game-header {
+        background: rgba(46, 125, 50, 0.9);
+        color: #e8f5e8;
+    }
+    
+    .game-header h1 {
+        color: #c8e6c9;
+    }
+    
+    .resources-panel, .stats-panel {
+        background: rgba(46, 125, 50, 0.8);
+        color: #e8f5e8;
+    }
+    
+    .garden-slot {
+        background: rgba(76, 175, 80, 0.2);
+        border-color: #4caf50;
+    }
+    
+    .shop-item, .upgrade-item {
+        background: rgba(46, 125, 50, 0.8);
+        color: #e8f5e8;
+    }
+    
+    .modal-content {
+        background: rgba(27, 94, 32, 0.95);
+        color: #e8f5e8;
+    }
+    
+    .control-btn.sound-disabled {
+        background: #424242;
+        color: #bdbdbd;
+    }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .garden-slot,
+    .shop-item,
+    .upgrade-item,
+    .control-btn,
+    .notification {
+        transition: none;
+        animation: none;
+    }
+    
+    .resource-increase,
+    .resource-decrease {
+        animation: none;
+    }
+}
+
+/* Print styles */
+@media print {
+    .game-controls,
+    .notifications-container,
+    .modal {
+        display: none;
+    }
+    
+    body {
+        background: white;
+        color: black;
+    }
+    
+    .game-container {
+        max-width: none;
+        padding: 0;
+    }
+}/* Acce
+ssibility improvements for mobile */
+@media (max-width: 768px) {
+    /* Ensure focus indicators are visible on mobile */
+    .garden-slot:focus,
+    .shop-purchase-btn:focus,
+    .upgrade-purchase-btn:focus,
+    .control-btn:focus {
+        outline: 2px solid #4caf50;
+        outline-offset: 2px;
+    }
+    
+    /* Improve text contrast for better readability */
+    .shop-item-description,
+    .upgrade-description {
+        color: #2e7d32;
+        font-weight: 500;
+    }
+    
+    /* Ensure interactive elements have sufficient spacing */
+    .shop-purchase-btn,
+    .upgrade-purchase-btn {
+        margin-top: 8px;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .garden-slot {
+        border-width: 2px;
+        border-color: #000;
+    }
+    
+    .shop-item,
+    .upgrade-item {
+        border: 2px solid #000;
+    }
+    
+    .control-btn {
+        border: 2px solid #000;
+    }
+}
+
+/* Large text support */
+@media (prefers-reduced-motion: no-preference) {
+    .garden-slot,
+    .shop-item,
+    .upgrade-item {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+}
+
+/* Mobile device class styles */
+.mobile-device .garden-slot {
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(76, 175, 80, 0.3);
+}
+
+.mobile-device .shop-purchase-btn,
+.mobile-device .upgrade-purchase-btn,
+.mobile-device .control-btn {
+    -webkit-tap-highlight-color: rgba(76, 175, 80, 0.3);
+    cursor: pointer;
+}
+
+/* iOS Safari specific fixes */
+.mobile-device input,
+.mobile-device button {
+    -webkit-appearance: none;
+    border-radius: 8px;
+}
+
+/* Android Chrome specific fixes */
+.mobile-device {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}

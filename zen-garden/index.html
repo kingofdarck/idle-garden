@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дзен Сад - Пассивная Игра</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="ui-overlay">
+            <div class="zen-info">
+                <div class="time-display">
+                    <span>🕐 День: </span>
+                    <span id="day-counter">1</span>
+                </div>
+                <div class="energy-display">
+                    <span>✨ Энергия: </span>
+                    <span id="energy-level">100</span>
+                </div>
+                <div class="plants-display">
+                    <span>🌱 Растения: </span>
+                    <span id="plant-count">0</span>
+                </div>
+            </div>
+            <div class="controls">
+                <button id="pauseBtn" class="control-btn">⏸️ Пауза</button>
+                <button id="speedBtn" class="control-btn">⏩ x1</button>
+            </div>
+        </div>
+        
+        <canvas id="zenCanvas" width="1000" height="700"></canvas>
+        
+        <div class="interaction-panel">
+            <div class="action-buttons">
+                <button id="plantSeedBtn" class="action-btn" title="Посадить семя (10 энергии)">
+                    🌱 Посадить семя
+                </button>
+                <button id="addFishBtn" class="action-btn" title="Добавить рыбку (20 энергии)">
+                    🐠 Добавить рыбку
+                </button>
+                <button id="addStoneBtn" class="action-btn" title="Добавить камень (5 энергии)">
+                    🪨 Добавить камень
+                </button>
+                <button id="rainBtn" class="action-btn" title="Вызвать дождь (30 энергии)">
+                    🌧️ Дождь
+                </button>
+            </div>
+            <div class="zen-message" id="zenMessage">
+                Добро пожаловать в Дзен Сад. Наблюдайте, как жизнь развивается сама собой...
+            </div>
+        </div>
+    </div>
+
+    <!-- Game scripts -->
+    <script src="js/entities/Entity.js"></script>
+    <script src="js/entities/Plant.js"></script>
+    <script src="js/entities/Fish.js"></script>
+    <script src="js/entities/Stone.js"></script>
+    <script src="js/entities/Particle.js"></script>
+    <script src="js/systems/GardenRenderer.js"></script>
+    <script src="js/systems/LifeSystem.js"></script>
+    <script src="js/systems/WeatherSystem.js"></script>
+    <script src="js/ZenEngine.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

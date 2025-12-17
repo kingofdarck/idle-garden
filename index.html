@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Космический Защитник</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="ui-overlay">
+            <div class="score-display">
+                <span>Счет: </span>
+                <span id="score">0</span>
+            </div>
+            <div class="health-display">
+                <span>Здоровье планеты: </span>
+                <span id="planet-health">100</span>
+            </div>
+        </div>
+        <button class="upgrade-button" id="upgradeButton" onclick="toggleUpgrades()">
+            ⚡ Улучшения (U)
+        </button>
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div class="game-over-screen" id="gameOverScreen" style="display: none;">
+            <h2>Игра окончена!</h2>
+            <p>Ваш счет: <span id="finalScore">0</span></p>
+            <button id="restartButton">Начать заново</button>
+        </div>
+    </div>
+
+    <!-- Game modules -->
+    <script src="js/entities/Entity.js"></script>
+    <script src="js/entities/PlayerShip.js"></script>
+    <script src="js/entities/Asteroid.js"></script>
+    <script src="js/entities/Projectile.js"></script>
+    <script src="js/systems/InputManager.js"></script>
+    <script src="js/systems/CollisionSystem.js"></script>
+    <script src="js/systems/UIManager.js"></script>
+    <script src="js/systems/SoundManager.js"></script>
+    <script src="js/systems/ParticleSystem.js"></script>
+    <script src="js/systems/ObjectPool.js"></script>
+    <script src="js/systems/UpgradeSystem.js"></script>
+    <script src="js/systems/UpgradeUI.js"></script>
+    <script src="js/systems/Renderer.js"></script>
+    <script src="js/GameEngine.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "space-defender",
+  "version": "1.0.0",
+  "description": "2D космическая аркадная игра",
+  "main": "js/main.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:integration": "jest --testPathPattern=integration",
+    "test:performance": "jest --testPathPattern=performance",
+    "test:all": "jest --verbose"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "fast-check": "^3.0.0",
+    "jest-environment-jsdom": "^29.0.0",
+    "jsdom": "^22.0.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": ["<rootDir>/test-setup.js"]
+  }
+}

@@ -1,0 +1,500 @@
+/* Космический Защитник - Стили игры */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+    color: #ffffff;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-container {
+    position: relative;
+    border: 2px solid #00ffff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    background: #000;
+}
+
+#gameCanvas {
+    display: block;
+    background: linear-gradient(180deg, #000428 0%, #004e92 100%);
+    border-radius: 8px;
+}
+
+.ui-overlay {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.score-display {
+    color: #00ff00;
+}
+
+.health-display {
+    color: #ff6b6b;
+}
+
+.game-over-screen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+    border: 2px solid #ff6b6b;
+    box-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
+    z-index: 20;
+}
+
+.game-over-screen h2 {
+    color: #ff6b6b;
+    margin-bottom: 20px;
+    font-size: 28px;
+}
+
+.game-over-screen p {
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+#restartButton {
+    background: linear-gradient(45deg, #00ff00, #00cc00);
+    color: #000;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#restartButton:hover {
+    background: linear-gradient(45deg, #00cc00, #009900);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+/* Анимации */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.score-display, .health-display {
+    animation: pulse 2s infinite;
+}
+
+/* Адаптивность */
+@media (max-width: 900px) {
+    .game-container {
+        margin: 10px;
+    }
+    
+    #gameCanvas {
+        width: 100%;
+        height: auto;
+        max-width: 800px;
+        max-height: 600px;
+    }
+    
+    .ui-overlay {
+        font-size: 16px;
+    }
+}
+/* Сис
+тема прокачки */
+.upgrade-ui {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.upgrade-panel {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 2px solid #00ffff;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 900px;
+    height: 80%;
+    max-height: 700px;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.upgrade-header {
+    background: linear-gradient(90deg, #00ffff, #0080ff);
+    color: #000;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+
+.upgrade-header h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.player-score {
+    font-size: 18px;
+}
+
+.close-btn {
+    background: #ff4444;
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    background: #ff6666;
+    transform: scale(1.1);
+}
+
+.upgrade-content {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.upgrade-list {
+    width: 50%;
+    padding: 20px;
+    overflow-y: auto;
+    border-right: 1px solid #333;
+}
+
+.upgrade-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upgrade-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #00ffff;
+    transform: translateX(5px);
+}
+
+.upgrade-item.selected {
+    background: rgba(0, 255, 255, 0.2);
+    border-color: #00ffff;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+.upgrade-icon {
+    font-size: 32px;
+    margin-right: 15px;
+    width: 50px;
+    text-align: center;
+}
+
+.upgrade-info {
+    flex: 1;
+}
+
+.upgrade-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #00ffff;
+    margin-bottom: 5px;
+}
+
+.upgrade-level {
+    font-size: 14px;
+    color: #ccc;
+    margin-bottom: 5px;
+}
+
+.upgrade-cost {
+    font-size: 14px;
+}
+
+.upgrade-cost.affordable {
+    color: #00ff00;
+}
+
+.upgrade-cost.expensive {
+    color: #ff6666;
+}
+
+.upgrade-actions {
+    margin-left: 15px;
+}
+
+.upgrade-btn {
+    background: linear-gradient(45deg, #00ff00, #00cc00);
+    color: #000;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upgrade-btn:hover:not(:disabled) {
+    background: linear-gradient(45deg, #00cc00, #009900);
+    transform: scale(1.05);
+}
+
+.upgrade-btn:disabled {
+    background: #666;
+    color: #999;
+    cursor: not-allowed;
+}
+
+.upgrade-details {
+    width: 50%;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.no-selection {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin-top: 50px;
+}
+
+.upgrade-detail-content h3 {
+    color: #00ffff;
+    margin-bottom: 15px;
+    font-size: 20px;
+}
+
+.upgrade-description {
+    color: #ccc;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.upgrade-stats {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 5px 0;
+    border-bottom: 1px solid #333;
+}
+
+.stat-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.stat-label {
+    color: #ccc;
+}
+
+.stat-value {
+    color: #fff;
+    font-weight: bold;
+}
+
+.stat-value.affordable {
+    color: #00ff00;
+}
+
+.stat-value.expensive {
+    color: #ff6666;
+}
+
+.stat-value.max-level {
+    color: #ffd700;
+}
+
+.purchase-btn {
+    background: linear-gradient(45deg, #00ff00, #00cc00);
+    color: #000;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.purchase-btn:hover {
+    background: linear-gradient(45deg, #00cc00, #009900);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 255, 0, 0.3);
+}
+
+.upgrade-footer {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #333;
+}
+
+.reset-btn, .save-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.reset-btn {
+    background: #ff4444;
+    color: white;
+}
+
+.reset-btn:hover {
+    background: #ff6666;
+}
+
+.save-btn {
+    background: #4444ff;
+    color: white;
+}
+
+.save-btn:hover {
+    background: #6666ff;
+}
+
+.upgrade-message {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    z-index: 1001;
+    animation: slideIn 0.3s ease;
+}
+
+.upgrade-message.success {
+    background: #00ff00;
+    color: #000;
+}
+
+.upgrade-message.error {
+    background: #ff4444;
+    color: white;
+}
+
+.upgrade-message.info {
+    background: #4444ff;
+    color: white;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Кнопка открытия панели улучшений */
+.upgrade-button {
+    position: absolute;
+    top: 50px;
+    right: 10px;
+    background: linear-gradient(45deg, #00ffff, #0080ff);
+    color: #000;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 15;
+}
+
+.upgrade-button:hover {
+    background: linear-gradient(45deg, #0080ff, #0060ff);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .upgrade-panel {
+        width: 95%;
+        height: 90%;
+    }
+    
+    .upgrade-content {
+        flex-direction: column;
+    }
+    
+    .upgrade-list, .upgrade-details {
+        width: 100%;
+    }
+    
+    .upgrade-list {
+        border-right: none;
+        border-bottom: 1px solid #333;
+        max-height: 40%;
+    }
+    
+    .upgrade-details {
+        max-height: 60%;
+    }
+    
+    .upgrade-footer {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
