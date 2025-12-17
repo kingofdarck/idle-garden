@@ -24,7 +24,18 @@ class ResourceManager {
         this.displayElements = {
             coins: null,
             seeds: null,
-            water: null
+            water: null,
+            gems: null,
+            fertilizer: null
+        };
+        
+        // Track displayed values for smooth animations
+        this.displayedValues = {
+            coins: this.resources.coins,
+            seeds: this.resources.seeds,
+            water: this.resources.water,
+            gems: this.resources.gems,
+            fertilizer: this.resources.fertilizer
         };
         
         this.initializeDisplayElements();
@@ -37,6 +48,8 @@ class ResourceManager {
         this.displayElements.coins = document.getElementById('coins-display');
         this.displayElements.seeds = document.getElementById('seeds-display');
         this.displayElements.water = document.getElementById('water-display');
+        this.displayElements.gems = document.getElementById('gems-display');
+        this.displayElements.fertilizer = document.getElementById('fertilizer-display');
         
         // Update display immediately
         this.updateDisplay();
@@ -261,8 +274,10 @@ class ResourceManager {
         } else {
             // Update all displays
             for (const [type, element] of Object.entries(this.displayElements)) {
-                if (element) {
+                if (element && this.resources[type] !== undefined) {
                     element.textContent = this.resources[type].toLocaleString();
+                    // Update tracked value
+                    this.displayedValues[type] = this.resources[type];
                 }
             }
         }
@@ -285,8 +300,12 @@ class ResourceManager {
         const element = this.displayElements[resourceType];
         if (!element) return;
         
-        const oldValue = parseFloat(element.textContent.replace(/,/g, '')) || 0;
+        // Use the tracked displayed value as the starting point
+        const oldValue = this.displayedValues[resourceType];
         const newValue = this.resources[resourceType];
+        
+        // Update tracked value
+        this.displayedValues[resourceType] = newValue;
         
         // Use UIFeedback system if available
         if (this.uiFeedback) {
@@ -359,6 +378,16 @@ class ResourceManager {
             gems: initialResources.gems !== undefined ? initialResources.gems : 0,
             fertilizer: initialResources.fertilizer !== undefined ? initialResources.fertilizer : 0
         };
+        
+        // Reset tracked displayed values
+        this.displayedValues = {
+            coins: this.resources.coins,
+            seeds: this.resources.seeds,
+            water: this.resources.water,
+            gems: this.resources.gems,
+            fertilizer: this.resources.fertilizer
+        };
+        
         this.updateDisplay();
     }
     
@@ -380,6 +409,16 @@ class ResourceManager {
         if (data && data.resources) {
             this.resources = { ...data.resources };
             this.validateResources();
+            
+            // Update tracked displayed values
+            this.displayedValues = {
+                coins: this.resources.coins,
+                seeds: this.resources.seeds,
+                water: this.resources.water,
+                gems: this.resources.gems,
+                fertilizer: this.resources.fertilizer
+            };
+            
             this.updateDisplay();
         }
     }

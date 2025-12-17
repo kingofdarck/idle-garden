@@ -105,9 +105,15 @@ class Shop {
         // Income information
         const incomeContainer = document.createElement('div');
         incomeContainer.className = 'shop-item-income';
+        
+        // Calculate income per second (base rate without upgrades)
+        const growthTimeInSeconds = plantConfig.growthTime / 1000;
+        const incomePerSecond = plantConfig.income / growthTimeInSeconds;
+        
         incomeContainer.innerHTML = `
             <div class="income-label">Доход за цикл:</div>
             <div class="income-value">🪙 ${plantConfig.income}</div>
+            <div class="income-per-second">💰 ${incomePerSecond.toFixed(1)}/сек</div>
         `;
         
         // Purchase button
@@ -278,12 +284,17 @@ class Shop {
             return null;
         }
         
+        // Calculate income per second (base rate without upgrades)
+        const growthTimeInSeconds = config.growthTime / 1000;
+        const incomePerSecond = config.income / growthTimeInSeconds;
+        
         return {
             type: plantType,
             name: config.name,
             icon: config.icon,
             cost: config.cost,
             income: config.income,
+            incomePerSecond: incomePerSecond,
             description: config.description,
             affordable: this.isAffordable(plantType)
         };

@@ -179,10 +179,7 @@ class GameEngine {
                 this.systems.shop.updateAffordabilityDisplay();
             }
             
-            // Show income notification for significant earnings
-            if (totalCoinsEarned >= 10 && this.systems.notificationSystem) {
-                this.systems.notificationSystem.showIncomeNotification(totalCoinsEarned);
-            }
+            // Income notifications disabled to reduce spam
         }
         
         // Update UI elements that depend on game state
