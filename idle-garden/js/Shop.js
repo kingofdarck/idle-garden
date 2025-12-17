@@ -52,14 +52,10 @@ class Shop {
         
         const plantTypes = this.getAllPlantTypes();
         plantTypes.forEach(plantType => {
-            // Check if plant is unlocked
-            if (this.gameEngine && !this.gameEngine.isPlantUnlocked(plantType)) {
-                return; // Skip locked plants
-            }
-            
             const plantConfig = this.getPlantConfig(plantType);
             if (plantConfig) {
-                this.createShopItem(plantType, plantConfig);
+                const isUnlocked = !this.gameEngine || this.gameEngine.isPlantUnlocked(plantType);
+                this.createShopItem(plantType, plantConfig, isUnlocked);
             }
         });
         
@@ -72,7 +68,7 @@ class Shop {
      * @param {string} plantType - Plant type identifier
      * @param {Object} plantConfig - Plant configuration object
      */
-    createShopItem(plantType, plantConfig) {
+    createShopItem(plantType, plantConfig, isUnlocked = true) {
         const shopItem = document.createElement('div');
         shopItem.className = 'shop-item';
         shopItem.dataset.plantType = plantType;
@@ -116,23 +112,48 @@ class Shop {
             <div class="income-per-second">💰 ${incomePerSecond.toFixed(1)}/сек</div>
         `;
         
-        // Purchase button
-        const purchaseButton = document.createElement('button');
-        purchaseButton.className = 'shop-purchase-btn';
-        purchaseButton.textContent = 'Выбрать';
-        purchaseButton.addEventListener('click', () => this.selectPlantType(plantType));
+        // Purchase button or unlock requirement
+        let actionElement;
+        if (isUnlocked) {
+            actionElement = document.createElement('button');
+            actionElement.className = 'shop-purchase-btn';
+            actionElement.textContent = 'Выбрать';
+            actionElement.addEventListener('click', () => this.selectPlantType(plantType));
+        } else {
+            // Show unlock requirement
+            actionElement = document.createElement('div');
+            actionElement.className = 'unlock-requirement';
+            if (plantConfig.unlockRequirement) {
+                const req = plantConfig.unlockRequirement;
+                const requiredPlantConfig = this.getPlantConfig(req.plant);
+                const currentHarvests = this.gameEngine ? this.gameEngine.getHarvestCount(req.plant) : 0;
+                actionElement.innerHTML = `
+                    <div class="unlock-text">🔒 Заблокировано</div>
+                    <div class="unlock-details">Соберите ${requiredPlantConfig ? requiredPlantConfig.name : req.plant}: ${currentHarvests}/${req.harvests}</div>
+                `;
+            } else {
+                actionElement.innerHTML = '<div class="unlock-text">🔒 Заблокировано</div>';
+            }
+        }
         
-        // Affordability indicator
+        // Affordability indicator (only for unlocked plants)
         const affordabilityIndicator = document.createElement('div');
         affordabilityIndicator.className = 'affordability-indicator';
+        
+        // Add locked class if needed
+        if (!isUnlocked) {
+            shopItem.classList.add('locked');
+        }
         
         // Assemble shop item
         shopItem.appendChild(header);
         shopItem.appendChild(description);
         shopItem.appendChild(costContainer);
         shopItem.appendChild(incomeContainer);
-        shopItem.appendChild(affordabilityIndicator);
-        shopItem.appendChild(purchaseButton);
+        if (isUnlocked) {
+            shopItem.appendChild(affordabilityIndicator);
+        }
+        shopItem.appendChild(actionElement);
         
         this.shopContainer.appendChild(shopItem);
         this.shopItems.set(plantType, shopItem);
@@ -145,7 +166,13 @@ class Shop {
     selectPlantType(plantType) {
         const plantConfig = this.getPlantConfig(plantType);
         if (!plantConfig) {
-            this.showNotification('Invalid plant type', 'error');
+            this.showNotification('Неверный тип растения', 'error');
+            return;
+        }
+        
+        // Check if plant is unlocked
+        if (this.gameEngine && !this.gameEngine.isPlantUnlocked(plantType)) {
+            this.showNotification('Это растение еще не разблокировано', 'error');
             return;
         }
         
@@ -224,22 +251,30 @@ class Shop {
      */
     updateAffordabilityDisplay() {
         this.shopItems.forEach((shopItem, plantType) => {
+            // Skip locked plants
+            if (shopItem.classList.contains('locked')) {
+                return;
+            }
+            
             const isAffordable = this.isAffordable(plantType);
             const affordabilityIndicator = shopItem.querySelector('.affordability-indicator');
             const purchaseButton = shopItem.querySelector('.shop-purchase-btn');
             
-            if (isAffordable) {
-                shopItem.classList.remove('unaffordable');
-                shopItem.classList.add('affordable');
-                affordabilityIndicator.textContent = '✅ Доступно';
-                affordabilityIndicator.className = 'affordability-indicator affordable';
-                purchaseButton.disabled = false;
-            } else {
-                shopItem.classList.remove('affordable');
-                shopItem.classList.add('unaffordable');
-                affordabilityIndicator.textContent = '❌ Слишком дорого';
-                affordabilityIndicator.className = 'affordability-indicator unaffordable';
-                purchaseButton.disabled = true;
+            // Only update if elements exist (unlocked plants)
+            if (affordabilityIndicator && purchaseButton) {
+                if (isAffordable) {
+                    shopItem.classList.remove('unaffordable');
+                    shopItem.classList.add('affordable');
+                    affordabilityIndicator.textContent = '✅ Доступно';
+                    affordabilityIndicator.className = 'affordability-indicator affordable';
+                    purchaseButton.disabled = false;
+                } else {
+                    shopItem.classList.remove('affordable');
+                    shopItem.classList.add('unaffordable');
+                    affordabilityIndicator.textContent = '❌ Слишком дорого';
+                    affordabilityIndicator.className = 'affordability-indicator unaffordable';
+                    purchaseButton.disabled = true;
+                }
             }
         });
     }
@@ -352,7 +387,7 @@ class Shop {
      * Refresh shop display (useful after resource changes)
      */
     refresh() {
-        this.updateAffordabilityDisplay();
+        this.initializeShop();
     }
 }
 

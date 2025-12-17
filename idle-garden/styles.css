@@ -434,6 +434,39 @@ body {
     box-shadow: 0 0 10px rgba(46, 125, 50, 0.3);
 }
 
+.shop-item.locked {
+    opacity: 0.6;
+    border-color: #bdbdbd;
+    background: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.shop-item.locked:hover {
+    transform: none;
+    border-color: #bdbdbd;
+    background: #f5f5f5;
+}
+
+.unlock-requirement {
+    text-align: center;
+    padding: 8px;
+    background: #fff3e0;
+    border: 1px solid #ffb74d;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.unlock-text {
+    font-weight: bold;
+    color: #e65100;
+    margin-bottom: 4px;
+}
+
+.unlock-details {
+    color: #bf360c;
+    font-size: 0.8rem;
+}
+
 .shop-item-icon {
     font-size: 2rem;
     min-width: 40px;

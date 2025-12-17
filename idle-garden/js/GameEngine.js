@@ -157,9 +157,9 @@ class GameEngine {
             totalCoinsEarned = this.systems.gardenGrid.updateAllPlants(deltaTime, upgradeEffects);
         }
         
-        // Add earned coins to resources
+        // Add earned coins to resources (silently to avoid animation spam)
         if (totalCoinsEarned > 0 && this.systems.resourceManager) {
-            this.systems.resourceManager.addResource('coins', totalCoinsEarned);
+            this.systems.resourceManager.addResourceSilently('coins', totalCoinsEarned);
             
             // Add visual feedback for income generation
             if (this.systems.uiFeedback) {

@@ -96,6 +96,26 @@ class ResourceManager {
     }
     
     /**
+     * Add resources silently without animation (for continuous income)
+     * @param {string} resourceType - Type of resource to add
+     * @param {number} amount - Amount to add (must be positive)
+     * @returns {boolean} True if successful, false if invalid
+     */
+    addResourceSilently(resourceType, amount) {
+        if (!(resourceType in this.resources)) {
+            throw new Error(`Invalid resource type: ${resourceType}`);
+        }
+        
+        if (amount < 0) {
+            throw new Error('Amount must be positive for adding resources');
+        }
+        
+        this.resources[resourceType] += amount;
+        this.updateDisplaySilently(resourceType);
+        return true;
+    }
+    
+    /**
      * Add multiple resources at once
      * @param {Object} resourceAmounts - Object with resource types and amounts
      * @returns {boolean} True if all additions successful
@@ -280,6 +300,19 @@ class ResourceManager {
                     this.displayedValues[type] = this.resources[type];
                 }
             }
+        }
+    }
+    
+    /**
+     * Update resource display silently without animation
+     * @param {string} resourceType - Type of resource to update
+     */
+    updateDisplaySilently(resourceType) {
+        const element = this.displayElements[resourceType];
+        if (element && this.resources[resourceType] !== undefined) {
+            element.textContent = this.resources[resourceType].toLocaleString();
+            // Update tracked value
+            this.displayedValues[resourceType] = this.resources[resourceType];
         }
     }
     

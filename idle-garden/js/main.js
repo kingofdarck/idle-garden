@@ -52,9 +52,8 @@ function initializeGame() {
         // Initialize upgrade system
         gameState.upgradeSystem = new window.UpgradeSystem(gameState.resourceManager);
         
-        // Initialize shop
+        // Initialize shop (don't refresh yet, wait for GameEngine)
         gameState.shop = new window.Shop(gameState.resourceManager);
-        gameState.shop.refresh();
         
         // Initialize garden grid
         gameState.gardenGrid = new window.GardenGrid('garden-grid', 3, 4);
