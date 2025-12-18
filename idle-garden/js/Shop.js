@@ -88,12 +88,27 @@ class Shop {
         // Cost breakdown
         const costContainer = document.createElement('div');
         costContainer.className = 'shop-item-cost';
+        // Build cost breakdown dynamically to include all resources
+        let costBreakdown = `
+            <span class="cost-item">🪙 ${plantConfig.cost.coins}</span>
+            <span class="cost-item">🌰 ${plantConfig.cost.seeds}</span>
+            <span class="cost-item">💧 ${plantConfig.cost.water}</span>
+        `;
+        
+        // Add gems if required
+        if (plantConfig.cost.gems && plantConfig.cost.gems > 0) {
+            costBreakdown += `<span class="cost-item">💎 ${plantConfig.cost.gems}</span>`;
+        }
+        
+        // Add fertilizer if required
+        if (plantConfig.cost.fertilizer && plantConfig.cost.fertilizer > 0) {
+            costBreakdown += `<span class="cost-item">🧪 ${plantConfig.cost.fertilizer}</span>`;
+        }
+        
         costContainer.innerHTML = `
             <div class="cost-label">Стоимость:</div>
             <div class="cost-breakdown">
-                <span class="cost-item">🪙 ${plantConfig.cost.coins}</span>
-                <span class="cost-item">🌰 ${plantConfig.cost.seeds}</span>
-                <span class="cost-item">💧 ${plantConfig.cost.water}</span>
+                ${costBreakdown}
             </div>
         `;
         
@@ -235,7 +250,8 @@ class Shop {
             }
         }
         
-        return this.resourceManager.canAffordSafely(finalCost, true);
+        // Temporarily use basic canAfford for debugging
+        return this.resourceManager.canAfford(finalCost);
     }
     
     /**

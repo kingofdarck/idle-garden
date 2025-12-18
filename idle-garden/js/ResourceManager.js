@@ -237,6 +237,11 @@ class ResourceManager {
             return this.canAfford(cost);
         }
 
+        // For expensive plants (>1000 coins), skip bankruptcy protection
+        if (cost.coins && cost.coins > 1000) {
+            return this.canAfford(cost);
+        }
+
         // Get cheapest plant cost (using global function)
         let cheapestPlantCost = null;
         try {
