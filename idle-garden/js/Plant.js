@@ -49,9 +49,11 @@ class Plant {
      * Update plant growth and generate income
      * @param {number} deltaTime - Time elapsed since last update in milliseconds
      * @param {Object} upgrades - Current upgrade multipliers
+     * @param {Object} prestigeMultipliers - Prestige multipliers
+     * @param {number} fertilizerAmount - Current fertilizer amount
      * @returns {number} Coins earned this update (0 if not ready to harvest)
      */
-    update(deltaTime, upgrades = {}) {
+    update(deltaTime, upgrades = {}, prestigeMultipliers = {}, fertilizerAmount = 0) {
         if (!this.planted) {
             return 0;
         }
@@ -61,9 +63,13 @@ class Plant {
             return 0;
         }
         
-        // Apply growth speed upgrade
+        // Apply growth speed upgrades and fertilizer boost
         const growthSpeedMultiplier = upgrades.growthSpeed || 1;
-        const effectiveDeltaTime = deltaTime * growthSpeedMultiplier;
+        const prestigeGrowthBoost = prestigeMultipliers.growthSpeedBoost || 1;
+        const fertilizerBoost = 1 + (fertilizerAmount * 0.01); // 1% per fertilizer
+        
+        const totalGrowthMultiplier = growthSpeedMultiplier * prestigeGrowthBoost * fertilizerBoost;
+        const effectiveDeltaTime = deltaTime * totalGrowthMultiplier;
         
         // Calculate growth progress
         const growthIncrement = effectiveDeltaTime / config.growthTime;
@@ -73,9 +79,19 @@ class Plant {
         
         // Check if plant completed growth cycle
         if (this.growthProgress >= 1.0) {
-            // Calculate income with upgrade multipliers
+            // Calculate income with all multipliers
             const incomeMultiplier = upgrades.incomeBoost || 1;
-            coinsEarned = config.income * incomeMultiplier;
+            const prestigeIncomeMultiplier = prestigeMultipliers.incomeMultiplier || 1;
+            
+            let baseIncome = config.income * incomeMultiplier * prestigeIncomeMultiplier;
+            
+            // Check for mega harvest chance (prestige upgrade)
+            const megaHarvestChance = prestigeMultipliers.megaHarvestChance || 0;
+            if (Math.random() < megaHarvestChance) {
+                baseIncome *= 3; // Triple income on mega harvest
+            }
+            
+            coinsEarned = baseIncome;
             this.totalEarned += coinsEarned;
             
             // Restart growth cycle immediately for continuity

@@ -8,6 +8,8 @@ let gameState = {
     shop: null,
     gardenGrid: null,
     upgradeSystem: null,
+    prestigeSystem: null,
+    crystalUpgrades: null,
     saveSystem: null,
     gameEngine: null,
     notificationSystem: null,
@@ -52,6 +54,12 @@ function initializeGame() {
         // Initialize upgrade system
         gameState.upgradeSystem = new window.UpgradeSystem(gameState.resourceManager);
         
+        // Initialize prestige system
+        gameState.prestigeSystem = new window.PrestigeSystem(gameState.resourceManager);
+        
+        // Initialize crystal upgrades system
+        gameState.crystalUpgrades = new window.CrystalUpgrades(gameState.resourceManager);
+        
         // Initialize shop (don't refresh yet, wait for GameEngine)
         gameState.shop = new window.Shop(gameState.resourceManager);
         
@@ -70,6 +78,12 @@ function initializeGame() {
         // Initialize upgrade UI
         initializeUpgradeUI();
         
+        // Initialize prestige UI
+        initializePrestigeUI();
+        
+        // Initialize crystal upgrades UI
+        initializeCrystalUpgradesUI();
+        
         // Add basic event listeners for UI elements
         setupBasicEventListeners();
         
@@ -83,6 +97,13 @@ function initializeGame() {
         if (gameState.soundManager) {
             gameState.soundManager.updateSoundToggleUI();
         }
+        
+        // Force update crystal upgrades UI after everything is loaded
+        setTimeout(() => {
+            if (typeof initializeCrystalUpgradesUI === 'function') {
+                initializeCrystalUpgradesUI();
+            }
+        }, 100);
         
         // Initialize mobile optimizations
         initializeMobileOptimizations();
@@ -164,7 +185,19 @@ function attemptPlantPlacement(slotIndex, plantType) {
         }
         
         // Apply water efficiency upgrade to cost
-        const modifiedCost = gameState.upgradeSystem.applyWaterEfficiency(config.cost);
+        let modifiedCost = gameState.upgradeSystem.applyWaterEfficiency(config.cost);
+        
+        // Apply prestige resource efficiency if available
+        if (gameState.prestigeSystem) {
+            const prestigeMultipliers = gameState.prestigeSystem.getPrestigeMultipliers();
+            if (prestigeMultipliers.resourceEfficiency !== 1) {
+                const finalCost = {};
+                for (const [resource, amount] of Object.entries(modifiedCost)) {
+                    finalCost[resource] = Math.ceil(amount * prestigeMultipliers.resourceEfficiency);
+                }
+                modifiedCost = finalCost;
+            }
+        }
         
         // Check if player can afford the plant safely
         if (!gameState.resourceManager.canAffordSafely(modifiedCost, true)) {
@@ -237,6 +270,8 @@ function initializeGameEngine() {
         shop: gameState.shop,
         gardenGrid: gameState.gardenGrid,
         upgradeSystem: gameState.upgradeSystem,
+        prestigeSystem: gameState.prestigeSystem,
+        crystalUpgrades: gameState.crystalUpgrades,
         saveSystem: gameState.saveSystem,
         notificationSystem: gameState.notificationSystem,
         uiFeedback: gameState.uiFeedback,
@@ -266,6 +301,8 @@ function tryLoadSavedGame() {
             gameState.shop.refresh();
         }
         initializeUpgradeUI();
+        initializeCrystalUpgradesUI();
+        initializePrestigeUI();
     } else {
         console.log('🌱 Сохранение не найдено, начинаем заново');
     }
@@ -364,6 +401,12 @@ function refreshAllUI() {
         
         // Refresh upgrade UI
         initializeUpgradeUI();
+        
+        // Refresh crystal upgrades UI
+        initializeCrystalUpgradesUI();
+        
+        // Refresh prestige UI
+        initializePrestigeUI();
         
         // Clear garden grid display
         if (gameState.gardenGrid) {
@@ -933,6 +976,348 @@ if (typeof window !== 'undefined') {
     window.sellPlantFromSlot = sellPlantFromSlot;
 }
 
+
+/**
+ * Initialize prestige UI
+ */
+function initializePrestigeUI() {
+    const prestigeContainer = document.getElementById('prestige-upgrades');
+    if (!prestigeContainer) {
+        console.warn('Prestige container not found');
+        return;
+    }
+    
+    // Clear existing content
+    prestigeContainer.innerHTML = '';
+    
+    // Get all prestige upgrades and create UI elements
+    const upgrades = gameState.prestigeSystem.getAllPrestigeUpgradesDisplayInfo();
+    
+    upgrades.forEach(upgrade => {
+        createPrestigeUpgradeItem(upgrade, prestigeContainer);
+    });
+    
+    // Update prestige info
+    updatePrestigeInfo();
+    
+    // Set up prestige button
+    const prestigeBtn = document.getElementById('prestige-btn');
+    if (prestigeBtn) {
+        prestigeBtn.addEventListener('click', performPrestige);
+    }
+}
+
+/**
+ * Create a prestige upgrade item UI element
+ */
+function createPrestigeUpgradeItem(upgrade, container) {
+    const upgradeItem = document.createElement('div');
+    upgradeItem.className = 'prestige-upgrade-item';
+    upgradeItem.dataset.upgradeType = upgrade.type;
+    
+    upgradeItem.innerHTML = `
+        <div class="upgrade-header">
+            <span class="upgrade-icon">${upgrade.icon}</span>
+            <span class="upgrade-name">${upgrade.name}</span>
+        </div>
+        <div class="upgrade-description">${upgrade.description}</div>
+        <div class="upgrade-level-info">
+            <div class="upgrade-level">Уровень: ${upgrade.currentLevel}/${upgrade.maxLevel}</div>
+            <div class="upgrade-effect">Эффект: ${upgrade.currentEffect}</div>
+        </div>
+        <div class="upgrade-purchase-section">
+            ${upgrade.isMaxLevel ? 
+                '<div class="upgrade-max-level">✅ Максимальный уровень</div>' :
+                `<div class="upgrade-cost">Стоимость: ${upgrade.cost} ⭐</div>
+                 <button class="upgrade-purchase-btn" ${!upgrade.canPurchase ? 'disabled' : ''}>
+                     Купить улучшение
+                 </button>`
+            }
+        </div>
+    `;
+    
+    if (upgrade.canPurchase && !upgrade.isMaxLevel) {
+        upgradeItem.classList.add('affordable');
+    }
+    
+    // Add click handler
+    const purchaseBtn = upgradeItem.querySelector('.upgrade-purchase-btn');
+    if (purchaseBtn) {
+        purchaseBtn.addEventListener('click', () => purchasePrestigeUpgrade(upgrade.type));
+    }
+    
+    container.appendChild(upgradeItem);
+}
+
+/**
+ * Initialize crystal upgrades UI
+ */
+function initializeCrystalUpgradesUI() {
+    const crystalContainer = document.getElementById('crystal-upgrades');
+    if (!crystalContainer) {
+        console.warn('Crystal upgrades container not found');
+        return;
+    }
+    
+    // Clear existing content
+    crystalContainer.innerHTML = '';
+    
+    // Add current crystals display
+    const currentGems = gameState.resourceManager.getResource('gems');
+    const crystalsHeader = document.createElement('div');
+    crystalsHeader.className = 'crystals-header';
+    crystalsHeader.innerHTML = `
+        <div class="current-crystals">
+            <span class="crystals-icon">💎</span>
+            <span class="crystals-label">Доступно кристаллов:</span>
+            <span class="crystals-value">${currentGems}</span>
+        </div>
+    `;
+    crystalContainer.appendChild(crystalsHeader);
+    
+    // Get all crystal upgrades and create UI elements
+    const upgrades = gameState.crystalUpgrades.getAllCrystalUpgradesDisplayInfo();
+    
+    upgrades.forEach(upgrade => {
+        createCrystalUpgradeItem(upgrade, crystalContainer);
+    });
+}
+
+/**
+ * Create a crystal upgrade item UI element (compact accordion style)
+ */
+function createCrystalUpgradeItem(upgrade, container) {
+    const upgradeItem = document.createElement('div');
+    upgradeItem.className = 'crystal-upgrade-item collapsed';
+    upgradeItem.dataset.upgradeType = upgrade.type;
+    
+    // Create compact header
+    const header = document.createElement('div');
+    header.className = 'crystal-upgrade-header';
+    header.innerHTML = `
+        <div class="upgrade-header-content">
+            <span class="upgrade-icon">${upgrade.icon}</span>
+            <span class="upgrade-name">${upgrade.name}</span>
+            <span class="upgrade-level-badge">Ур. ${upgrade.currentLevel}/${upgrade.maxLevel}</span>
+        </div>
+        <div class="upgrade-status">
+            ${upgrade.isMaxLevel ? 
+                '<span class="max-level-badge">✅ МАКС</span>' :
+                upgrade.canPurchase ? 
+                    '<span class="affordable-badge">💎 ' + upgrade.cost + '</span>' :
+                    '<span class="expensive-badge">💎 ' + upgrade.cost + '</span>'
+            }
+        </div>
+        <span class="expand-arrow">▼</span>
+    `;
+    
+    // Create expandable content
+    const content = document.createElement('div');
+    content.className = 'crystal-upgrade-content';
+    content.innerHTML = `
+        <div class="upgrade-description">${upgrade.description}</div>
+        <div class="upgrade-effect-info">
+            <strong>Текущий эффект:</strong> ${upgrade.currentEffect}
+        </div>
+        ${!upgrade.isMaxLevel ? `
+            <div class="upgrade-purchase-section">
+                <button class="crystal-upgrade-purchase-btn" ${!upgrade.canPurchase ? 'disabled' : ''}>
+                    💎 Купить за ${upgrade.cost} кристаллов
+                </button>
+            </div>
+        ` : ''}
+    `;
+    
+    // Add classes for styling
+    if (upgrade.canPurchase && !upgrade.isMaxLevel) {
+        upgradeItem.classList.add('affordable');
+    }
+    
+    if (upgrade.isMaxLevel) {
+        upgradeItem.classList.add('max-level');
+    }
+    
+    // Assemble the item
+    upgradeItem.appendChild(header);
+    upgradeItem.appendChild(content);
+    
+    // Add click handler for expansion
+    header.addEventListener('click', () => {
+        toggleCrystalUpgradeExpansion(upgradeItem);
+    });
+    
+    // Add purchase button handler
+    const purchaseBtn = content.querySelector('.crystal-upgrade-purchase-btn');
+    if (purchaseBtn) {
+        purchaseBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent header click
+            purchaseCrystalUpgrade(upgrade.type);
+        });
+    }
+    
+    container.appendChild(upgradeItem);
+}
+
+/**
+ * Toggle expansion of crystal upgrade item
+ */
+function toggleCrystalUpgradeExpansion(upgradeItem) {
+    const isCollapsed = upgradeItem.classList.contains('collapsed');
+    const arrow = upgradeItem.querySelector('.expand-arrow');
+    
+    if (isCollapsed) {
+        upgradeItem.classList.remove('collapsed');
+        upgradeItem.classList.add('expanded');
+        arrow.textContent = '▲';
+    } else {
+        upgradeItem.classList.add('collapsed');
+        upgradeItem.classList.remove('expanded');
+        arrow.textContent = '▼';
+    }
+}
+
+/**
+ * Purchase prestige upgrade
+ */
+function purchasePrestigeUpgrade(upgradeType) {
+    const success = gameState.prestigeSystem.purchasePrestigeUpgrade(upgradeType);
+    
+    if (success) {
+        const config = gameState.prestigeSystem.prestigeUpgradeConfigs[upgradeType];
+        
+        if (gameState.soundManager) {
+            gameState.soundManager.playSuccessSound();
+        }
+        
+        showNotification(`Куплено престижное улучшение ${config.name}! ⭐`, 'success');
+        
+        // Refresh prestige UI
+        initializePrestigeUI();
+    } else {
+        if (gameState.soundManager) {
+            gameState.soundManager.playErrorSound();
+        }
+        
+        showNotification('Недостаточно очков престижа!', 'error');
+    }
+}
+
+/**
+ * Purchase crystal upgrade
+ */
+function purchaseCrystalUpgrade(upgradeType) {
+    const success = gameState.crystalUpgrades.purchaseCrystalUpgrade(upgradeType);
+    
+    if (success) {
+        const config = gameState.crystalUpgrades.crystalUpgradeConfigs[upgradeType];
+        
+        if (gameState.soundManager) {
+            gameState.soundManager.playSuccessSound();
+        }
+        
+        showNotification(`Куплено кристальное улучшение ${config.name}! 💎`, 'success');
+        
+        // Refresh crystal upgrades UI
+        initializeCrystalUpgradesUI();
+    } else {
+        if (gameState.soundManager) {
+            gameState.soundManager.playErrorSound();
+        }
+        
+        showNotification('Недостаточно кристаллов!', 'error');
+    }
+}
+
+/**
+ * Perform prestige
+ */
+function performPrestige() {
+    const result = gameState.prestigeSystem.performPrestige();
+    
+    if (result.success) {
+        if (gameState.soundManager) {
+            gameState.soundManager.playSuccessSound();
+        }
+        
+        showNotification(`🌟 Перерождение завершено! Получено ${result.pointsGained} очков престижа!`, 'success');
+        
+        // Reset garden and shop
+        if (gameState.gardenGrid) {
+            gameState.gardenGrid.clearAllPlants();
+        }
+        
+        if (gameState.shop) {
+            gameState.shop.clearSelection();
+            gameState.shop.refresh();
+        }
+        
+        // Reset upgrade system
+        if (gameState.upgradeSystem) {
+            gameState.upgradeSystem.reset();
+        }
+        
+        // Refresh all UI
+        initializeUpgradeUI();
+        initializePrestigeUI();
+        updatePrestigeInfo();
+        
+    } else {
+        if (gameState.soundManager) {
+            gameState.soundManager.playErrorSound();
+        }
+        
+        showNotification(result.message, 'error');
+    }
+}
+
+/**
+ * Update prestige info display
+ */
+function updatePrestigeInfo() {
+    const levelDisplay = document.getElementById('prestige-level-display');
+    const pointsDisplay = document.getElementById('prestige-points-available');
+    const requirementDisplay = document.getElementById('prestige-requirement');
+    const prestigeBtn = document.getElementById('prestige-btn');
+    
+    if (levelDisplay) {
+        levelDisplay.textContent = gameState.prestigeSystem.prestigeLevel;
+    }
+    
+    if (pointsDisplay) {
+        pointsDisplay.textContent = gameState.prestigeSystem.prestigePoints;
+    }
+    
+    const requirements = gameState.prestigeSystem.getPrestigeRequirements();
+    
+    if (requirementDisplay) {
+        requirementDisplay.innerHTML = `
+            ${requirements.coinRequirement.toLocaleString()} монет, 
+            ${requirements.cosmicOrchidRequirement} космических орхидей
+        `;
+    }
+    
+    if (prestigeBtn) {
+        const canPrestige = requirements.canPrestige;
+        prestigeBtn.disabled = !canPrestige;
+        
+        if (canPrestige) {
+            const coins = gameState.resourceManager.getResource('coins');
+            const pointsGained = gameState.prestigeSystem.calculatePrestigePoints(coins);
+            prestigeBtn.innerHTML = `🌟 Перерождение (+${pointsGained} очков)`;
+        } else {
+            let statusText = '🌟 Перерождение (Требуется: ';
+            if (!requirements.hasCoins) {
+                statusText += `${requirements.coinRequirement.toLocaleString()} монет`;
+            }
+            if (!requirements.hasCosmicOrchids) {
+                if (!requirements.hasCoins) statusText += ', ';
+                statusText += `${requirements.cosmicOrchidRequirement} космических орхидей (${requirements.cosmicOrchidCount}/${requirements.cosmicOrchidRequirement})`;
+            }
+            statusText += ')';
+            prestigeBtn.innerHTML = statusText;
+        }
+    }
+}
 
 /**
  * Update player name display

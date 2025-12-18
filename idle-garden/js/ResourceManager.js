@@ -10,11 +10,12 @@ class ResourceManager {
      */
     constructor(initialResources = {}, uiFeedback = null) {
         this.resources = {
-            coins: initialResources.coins !== undefined ? initialResources.coins : 100,
-            seeds: initialResources.seeds !== undefined ? initialResources.seeds : 20,
-            water: initialResources.water !== undefined ? initialResources.water : 30,
+            coins: initialResources.coins !== undefined ? initialResources.coins : 50,
+            seeds: initialResources.seeds !== undefined ? initialResources.seeds : 5,
+            water: initialResources.water !== undefined ? initialResources.water : 10,
             gems: initialResources.gems !== undefined ? initialResources.gems : 0,
-            fertilizer: initialResources.fertilizer !== undefined ? initialResources.fertilizer : 0
+            fertilizer: initialResources.fertilizer !== undefined ? initialResources.fertilizer : 0,
+            prestigePoints: initialResources.prestigePoints !== undefined ? initialResources.prestigePoints : 0
         };
         
         // UI feedback system
@@ -26,7 +27,8 @@ class ResourceManager {
             seeds: null,
             water: null,
             gems: null,
-            fertilizer: null
+            fertilizer: null,
+            prestigePoints: null
         };
         
         // Track displayed values for smooth animations
@@ -35,7 +37,8 @@ class ResourceManager {
             seeds: this.resources.seeds,
             water: this.resources.water,
             gems: this.resources.gems,
-            fertilizer: this.resources.fertilizer
+            fertilizer: this.resources.fertilizer,
+            prestigePoints: this.resources.prestigePoints
         };
         
         this.initializeDisplayElements();
@@ -50,6 +53,7 @@ class ResourceManager {
         this.displayElements.water = document.getElementById('water-display');
         this.displayElements.gems = document.getElementById('gems-display');
         this.displayElements.fertilizer = document.getElementById('fertilizer-display');
+        this.displayElements.prestigePoints = document.getElementById('prestige-points-display');
         
         // Update display immediately
         this.updateDisplay();
@@ -252,13 +256,17 @@ class ResourceManager {
         }
 
         // Check if we can afford both the requested cost AND the cheapest plant
+        // But only if we're not buying the cheapest plant itself
+        const isBuyingCheapestPlant = JSON.stringify(cost) === JSON.stringify(cheapestPlantCost);
+        
         for (const [resourceType, amount] of Object.entries(cost)) {
             if (!(resourceType in this.resources)) {
                 throw new Error(`Invalid resource type: ${resourceType}`);
             }
             
             const requiredAmount = amount;
-            const reserveAmount = cheapestPlantCost[resourceType] || 0;
+            // Only reserve resources if we're not buying the cheapest plant
+            const reserveAmount = isBuyingCheapestPlant ? 0 : (cheapestPlantCost[resourceType] || 0);
             const totalRequired = requiredAmount + reserveAmount;
             
             if (this.resources[resourceType] < totalRequired) {
@@ -301,6 +309,20 @@ class ResourceManager {
                 }
             }
         }
+        
+        // Update crystal upgrades UI when gems change
+        if ((resourceType === 'gems' || resourceType === null) && 
+            typeof window !== 'undefined' && 
+            typeof window.initializeCrystalUpgradesUI === 'function') {
+            try {
+                // Small delay to ensure DOM is ready
+                setTimeout(() => {
+                    window.initializeCrystalUpgradesUI();
+                }, 10);
+            } catch (error) {
+                console.warn('Failed to update crystal upgrades UI:', error);
+            }
+        }
     }
     
     /**
@@ -313,6 +335,20 @@ class ResourceManager {
             element.textContent = this.resources[resourceType].toLocaleString();
             // Update tracked value
             this.displayedValues[resourceType] = this.resources[resourceType];
+        }
+        
+        // Update crystal upgrades UI when gems change
+        if (resourceType === 'gems' && 
+            typeof window !== 'undefined' && 
+            typeof window.initializeCrystalUpgradesUI === 'function') {
+            try {
+                // Small delay to ensure DOM is ready
+                setTimeout(() => {
+                    window.initializeCrystalUpgradesUI();
+                }, 10);
+            } catch (error) {
+                console.warn('Failed to update crystal upgrades UI:', error);
+            }
         }
     }
     
@@ -409,7 +445,8 @@ class ResourceManager {
             seeds: initialResources.seeds !== undefined ? initialResources.seeds : 20,
             water: initialResources.water !== undefined ? initialResources.water : 30,
             gems: initialResources.gems !== undefined ? initialResources.gems : 0,
-            fertilizer: initialResources.fertilizer !== undefined ? initialResources.fertilizer : 0
+            fertilizer: initialResources.fertilizer !== undefined ? initialResources.fertilizer : 0,
+            prestigePoints: initialResources.prestigePoints !== undefined ? initialResources.prestigePoints : 0
         };
         
         // Reset tracked displayed values
@@ -418,7 +455,8 @@ class ResourceManager {
             seeds: this.resources.seeds,
             water: this.resources.water,
             gems: this.resources.gems,
-            fertilizer: this.resources.fertilizer
+            fertilizer: this.resources.fertilizer,
+            prestigePoints: this.resources.prestigePoints
         };
         
         this.updateDisplay();
@@ -449,7 +487,8 @@ class ResourceManager {
                 seeds: this.resources.seeds,
                 water: this.resources.water,
                 gems: this.resources.gems,
-                fertilizer: this.resources.fertilizer
+                fertilizer: this.resources.fertilizer,
+                prestigePoints: this.resources.prestigePoints || 0
             };
             
             this.updateDisplay();

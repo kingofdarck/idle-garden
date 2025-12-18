@@ -107,12 +107,14 @@ body {
 .game-main {
     display: grid;
     grid-template-columns: 1fr 2fr;
-    grid-template-rows: auto auto 1fr;
+    grid-template-rows: auto auto 1fr auto;
     gap: 20px;
     grid-template-areas: 
         "resources stats"
+        "prestige prestige"
         "garden garden"
-        "shop upgrades";
+        "shop upgrades"
+        "crystal crystal";
 }
 
 /* Resource panel */
@@ -168,6 +170,366 @@ body {
 .coming-soon-hint small {
     color: #666;
     font-style: italic;
+}
+
+/* Prestige section */
+.prestige-section {
+    grid-area: prestige;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.prestige-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border-radius: 10px;
+    border: 2px solid #ffb74d;
+}
+
+.prestige-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.prestige-stat {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.prestige-button {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+}
+
+.prestige-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #f57c00 0%, #e65100 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(255, 152, 0, 0.4);
+}
+
+.prestige-button:disabled {
+    background: #bdbdbd;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.prestige-upgrades-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 12px;
+}
+
+.prestige-upgrade-item {
+    background: #fff8e1;
+    border: 2px solid #ffcc02;
+    border-radius: 8px;
+    padding: 12px;
+    transition: all 0.3s ease;
+}
+
+.prestige-upgrade-item:hover {
+    border-color: #ff9800;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(255, 152, 0, 0.2);
+}
+
+.prestige-upgrade-item.affordable {
+    border-color: #4caf50;
+    background: #e8f5e8;
+}
+
+.prestige-upgrade-item .upgrade-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.prestige-upgrade-item .upgrade-icon {
+    font-size: 1.1rem;
+}
+
+.prestige-upgrade-item .upgrade-name {
+    font-weight: 600;
+    color: #f57c00;
+}
+
+.prestige-upgrade-item .upgrade-description {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.prestige-upgrade-item .upgrade-level-info {
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+}
+
+.prestige-upgrade-item .upgrade-purchase-section {
+    margin-top: 8px;
+}
+
+.prestige-upgrade-item .upgrade-cost {
+    font-size: 0.85rem;
+    color: #f57c00;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.prestige-upgrade-item .upgrade-purchase-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.prestige-upgrade-item .upgrade-purchase-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #f57c00 0%, #e65100 100%);
+    transform: translateY(-1px);
+}
+
+.prestige-upgrade-item .upgrade-purchase-btn:disabled {
+    background: #bdbdbd;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.prestige-upgrade-item .upgrade-max-level {
+    background: #4caf50;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Crystal upgrades section */
+.crystal-section {
+    grid-area: crystal;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.crystals-header {
+    background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+    border: 2px solid #2196f3;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.current-crystals {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.crystals-icon {
+    font-size: 1.5rem;
+}
+
+.crystals-label {
+    color: #1976d2;
+}
+
+.crystals-value {
+    color: #0d47a1;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.crystal-upgrades-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Compact crystal upgrade items */
+.crystal-upgrade-item {
+    background: #e8f4fd;
+    border: 2px solid #2196f3;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.crystal-upgrade-item:hover {
+    border-color: #1976d2;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+}
+
+.crystal-upgrade-item.affordable {
+    border-color: #4caf50;
+    background: #e8f5e8;
+}
+
+.crystal-upgrade-item.max-level {
+    border-color: #ff9800;
+    background: #fff3e0;
+}
+
+/* Crystal upgrade header (always visible) */
+.crystal-upgrade-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.5);
+    border-bottom: 1px solid rgba(33, 150, 243, 0.2);
+}
+
+.upgrade-header-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.upgrade-header-content .upgrade-icon {
+    font-size: 1.2rem;
+}
+
+.upgrade-header-content .upgrade-name {
+    font-weight: 600;
+    color: #1976d2;
+}
+
+.upgrade-level-badge {
+    background: #2196f3;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.upgrade-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.affordable-badge {
+    background: #4caf50;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.expensive-badge {
+    background: #f44336;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.max-level-badge {
+    background: #ff9800;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.expand-arrow {
+    font-size: 0.8rem;
+    color: #666;
+    transition: transform 0.3s ease;
+    margin-left: 8px;
+}
+
+/* Crystal upgrade content (expandable) */
+.crystal-upgrade-content {
+    padding: 0 15px;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    opacity: 0;
+}
+
+.crystal-upgrade-item.expanded .crystal-upgrade-content {
+    max-height: 200px;
+    padding: 15px;
+    opacity: 1;
+}
+
+.crystal-upgrade-item.expanded .expand-arrow {
+    transform: rotate(180deg);
+}
+
+.upgrade-description {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.upgrade-effect-info {
+    background: rgba(33, 150, 243, 0.1);
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+}
+
+.crystal-upgrade-purchase-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.crystal-upgrade-purchase-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+}
+
+.crystal-upgrade-purchase-btn:disabled {
+    background: #bdbdbd;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 /* Stats panel */
@@ -1558,6 +1920,40 @@ nd toggle states */
     .resource-value, .stat-value {
         font-size: 1.1rem;
         font-weight: 600;
+    }
+    
+    /* Adjust grid layout for mobile */
+    .game-main {
+        grid-template-columns: 1fr;
+        grid-template-areas: 
+            "resources"
+            "stats"
+            "garden"
+            "shop"
+            "upgrades"
+            "prestige"
+            "crystal";
+    }
+    
+    /* Make crystal upgrades more compact on mobile */
+    .crystal-upgrade-header {
+        padding: 10px 12px;
+    }
+    
+    .upgrade-header-content {
+        gap: 8px;
+    }
+    
+    .upgrade-header-content .upgrade-name {
+        font-size: 0.9rem;
+    }
+    
+    .upgrade-level-badge,
+    .affordable-badge,
+    .expensive-badge,
+    .max-level-badge {
+        font-size: 0.7rem;
+        padding: 2px 6px;
     }
     
     .shop-item-name, .upgrade-name {

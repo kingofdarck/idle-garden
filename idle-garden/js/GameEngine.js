@@ -51,6 +51,8 @@ class GameEngine {
             shop: systems.shop || this.systems.shop,
             gardenGrid: systems.gardenGrid || this.systems.gardenGrid,
             upgradeSystem: systems.upgradeSystem || this.systems.upgradeSystem,
+            prestigeSystem: systems.prestigeSystem || this.systems.prestigeSystem,
+            crystalUpgrades: systems.crystalUpgrades || this.systems.crystalUpgrades,
             notificationSystem: systems.notificationSystem || this.systems.notificationSystem,
             uiFeedback: systems.uiFeedback || this.systems.uiFeedback,
             saveSystem: systems.saveSystem || this.systems.saveSystem,
@@ -147,14 +149,43 @@ class GameEngine {
             this.systems.upgradeSystem.updateFertilizerProduction(deltaTime);
         }
         
+        // Update crystal upgrades (for AFK resource generation)
+        if (this.systems.crystalUpgrades) {
+            this.systems.crystalUpgrades.updateAfkResourceGeneration(deltaTime);
+        }
+        
         // Get current upgrade effects
         const upgradeEffects = this.systems.upgradeSystem ? 
             this.systems.upgradeSystem.getEffectMultipliers() : {};
         
+        // Get prestige multipliers
+        const prestigeMultipliers = this.systems.prestigeSystem ? 
+            this.systems.prestigeSystem.getPrestigeMultipliers() : {};
+        
+        // Get crystal multipliers
+        const crystalMultipliers = this.systems.crystalUpgrades ? 
+            this.systems.crystalUpgrades.getCrystalMultipliers() : {};
+        
+        // Combine upgrade effects with crystal multipliers
+        const combinedUpgrades = {
+            ...upgradeEffects,
+            incomeBoost: (upgradeEffects.incomeBoost || 1) * (crystalMultipliers.afkIncome || 1),
+            growthSpeed: (upgradeEffects.growthSpeed || 1) * (crystalMultipliers.afkSpeed || 1)
+        };
+        
+        // Get fertilizer amount for growth boost
+        const fertilizerAmount = this.systems.resourceManager ? 
+            this.systems.resourceManager.getResource('fertilizer') : 0;
+        
         // Update all plants and calculate income
         let totalCoinsEarned = 0;
         if (this.systems.gardenGrid) {
-            totalCoinsEarned = this.systems.gardenGrid.updateAllPlants(deltaTime, upgradeEffects);
+            totalCoinsEarned = this.systems.gardenGrid.updateAllPlants(deltaTime, combinedUpgrades, prestigeMultipliers, fertilizerAmount);
+        }
+        
+        // Auto-harvest if crystal upgrade is purchased
+        if (crystalMultipliers.autoHarvestLevel > 0 && this.systems.gardenGrid) {
+            this.performAutoHarvest(crystalMultipliers.autoHarvestLevel);
         }
         
         // Add earned coins to resources (silently to avoid animation spam)
@@ -195,6 +226,11 @@ class GameEngine {
         
         // Update upgrade affordability indicators
         this.updateUpgradeAffordability();
+        
+        // Update prestige info
+        if (typeof updatePrestigeInfo === 'function') {
+            updatePrestigeInfo();
+        }
     }
     
     /**
@@ -414,6 +450,58 @@ class GameEngine {
     }
     
     /**
+     * Perform automatic harvest based on crystal upgrade level
+     * @param {number} autoHarvestLevel - Level of auto-harvest upgrade
+     */
+    performAutoHarvest(autoHarvestLevel) {
+        if (!this.systems.gardenGrid) return;
+        
+        // Auto-harvest ready plants based on upgrade level
+        for (let i = 0; i < this.systems.gardenGrid.totalSlots; i++) {
+            const plant = this.systems.gardenGrid.plants[i];
+            if (plant && plant.isReadyToHarvest()) {
+                // Level 1: 25% chance, Level 2: 50% chance, Level 3: 100% chance
+                const harvestChance = autoHarvestLevel >= 3 ? 1.0 : (autoHarvestLevel * 0.25);
+                
+                if (Math.random() < harvestChance) {
+                    // Harvest the plant
+                    const config = plant.getConfig();
+                    if (config && this.systems.resourceManager) {
+                        // Get income with all multipliers applied
+                        const upgradeEffects = this.systems.upgradeSystem ? 
+                            this.systems.upgradeSystem.getUpgradeEffects() : {};
+                        const prestigeMultipliers = this.systems.prestigeSystem ? 
+                            this.systems.prestigeSystem.getPrestigeMultipliers() : {};
+                        const crystalMultipliers = this.systems.crystalUpgrades ? 
+                            this.systems.crystalUpgrades.getCrystalMultipliers() : {};
+                        
+                        const incomeMultiplier = (upgradeEffects.incomeBoost || 1) * 
+                                               (prestigeMultipliers.incomeMultiplier || 1) * 
+                                               (crystalMultipliers.afkIncome || 1);
+                        
+                        let income = config.income * incomeMultiplier;
+                        
+                        // Check for mega harvest
+                        const megaHarvestChance = prestigeMultipliers.megaHarvestChance || 0;
+                        if (Math.random() < megaHarvestChance) {
+                            income *= 3;
+                        }
+                        
+                        // Add resources
+                        this.systems.resourceManager.addResourceSilently('coins', income);
+                        
+                        // Reset plant for next cycle
+                        plant.resetGrowth();
+                        
+                        // Track harvest
+                        this.onPlantHarvested(plant.type);
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
      * Check if a plant is unlocked
      * @param {string} plantType - Type of plant to check
      * @returns {boolean} True if unlocked
@@ -517,6 +605,8 @@ class GameEngine {
             resources: null,
             garden: null,
             upgrades: null,
+            prestige: null,
+            crystalUpgrades: null,
             sound: null,
             progression: {
                 plantHarvests: this.plantHarvests,
@@ -534,6 +624,14 @@ class GameEngine {
         
         if (this.systems.upgradeSystem) {
             state.upgrades = this.systems.upgradeSystem.serialize();
+        }
+        
+        if (this.systems.prestigeSystem) {
+            state.prestige = this.systems.prestigeSystem.serialize();
+        }
+        
+        if (this.systems.crystalUpgrades) {
+            state.crystalUpgrades = this.systems.crystalUpgrades.serialize();
         }
         
         if (this.systems.soundManager) {
@@ -588,6 +686,16 @@ class GameEngine {
                         this.systems.notificationSystem.showOfflineProgressNotification(offlineTime, offlineIncome);
                     }
                 }
+            }
+            
+            // Load prestige data
+            if (state.prestige && this.systems.prestigeSystem) {
+                this.systems.prestigeSystem.deserialize(state.prestige);
+            }
+            
+            // Load crystal upgrades data
+            if (state.crystalUpgrades && this.systems.crystalUpgrades) {
+                this.systems.crystalUpgrades.deserialize(state.crystalUpgrades);
             }
             
             // Load sound settings

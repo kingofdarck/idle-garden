@@ -11,7 +11,7 @@ class Shop {
     constructor(resourceManager, shopContainer = null, gameEngine = null) {
         this.resourceManager = resourceManager;
         this.shopContainer = shopContainer || document.getElementById('shop-items');
-        this.gameEngine = gameEngine; // Reference to game engine for unlock checking
+        this.gameEngine = gameEngine;
         this.selectedPlantType = null;
         this.shopItems = new Map(); // Store shop item elements by plant type
         
@@ -54,8 +54,7 @@ class Shop {
         plantTypes.forEach(plantType => {
             const plantConfig = this.getPlantConfig(plantType);
             if (plantConfig) {
-                const isUnlocked = !this.gameEngine || this.gameEngine.isPlantUnlocked(plantType);
-                this.createShopItem(plantType, plantConfig, isUnlocked);
+                this.createShopItem(plantType, plantConfig);
             }
         });
         
@@ -68,7 +67,7 @@ class Shop {
      * @param {string} plantType - Plant type identifier
      * @param {Object} plantConfig - Plant configuration object
      */
-    createShopItem(plantType, plantConfig, isUnlocked = true) {
+    createShopItem(plantType, plantConfig) {
         const shopItem = document.createElement('div');
         shopItem.className = 'shop-item';
         shopItem.dataset.plantType = plantType;
@@ -112,47 +111,22 @@ class Shop {
             <div class="income-per-second">💰 ${incomePerSecond.toFixed(1)}/сек</div>
         `;
         
-        // Purchase button or unlock requirement
-        let actionElement;
-        if (isUnlocked) {
-            actionElement = document.createElement('button');
-            actionElement.className = 'shop-purchase-btn';
-            actionElement.textContent = 'Выбрать';
-            actionElement.addEventListener('click', () => this.selectPlantType(plantType));
-        } else {
-            // Show unlock requirement
-            actionElement = document.createElement('div');
-            actionElement.className = 'unlock-requirement';
-            if (plantConfig.unlockRequirement) {
-                const req = plantConfig.unlockRequirement;
-                const requiredPlantConfig = this.getPlantConfig(req.plant);
-                const currentHarvests = this.gameEngine ? this.gameEngine.getHarvestCount(req.plant) : 0;
-                actionElement.innerHTML = `
-                    <div class="unlock-text">🔒 Заблокировано</div>
-                    <div class="unlock-details">Соберите ${requiredPlantConfig ? requiredPlantConfig.name : req.plant}: ${currentHarvests}/${req.harvests}</div>
-                `;
-            } else {
-                actionElement.innerHTML = '<div class="unlock-text">🔒 Заблокировано</div>';
-            }
-        }
+        // Purchase button
+        const actionElement = document.createElement('button');
+        actionElement.className = 'shop-purchase-btn';
+        actionElement.textContent = 'Выбрать';
+        actionElement.addEventListener('click', () => this.selectPlantType(plantType));
         
-        // Affordability indicator (only for unlocked plants)
+        // Affordability indicator
         const affordabilityIndicator = document.createElement('div');
         affordabilityIndicator.className = 'affordability-indicator';
-        
-        // Add locked class if needed
-        if (!isUnlocked) {
-            shopItem.classList.add('locked');
-        }
         
         // Assemble shop item
         shopItem.appendChild(header);
         shopItem.appendChild(description);
         shopItem.appendChild(costContainer);
         shopItem.appendChild(incomeContainer);
-        if (isUnlocked) {
-            shopItem.appendChild(affordabilityIndicator);
-        }
+        shopItem.appendChild(affordabilityIndicator);
         shopItem.appendChild(actionElement);
         
         this.shopContainer.appendChild(shopItem);
@@ -170,15 +144,22 @@ class Shop {
             return;
         }
         
-        // Check if plant is unlocked
-        if (this.gameEngine && !this.gameEngine.isPlantUnlocked(plantType)) {
-            this.showNotification('Это растение еще не разблокировано', 'error');
-            return;
+
+        
+        // Apply prestige resource efficiency if available
+        let finalCost = { ...plantConfig.cost };
+        if (this.gameEngine && this.gameEngine.systems && this.gameEngine.systems.prestigeSystem) {
+            const prestigeMultipliers = this.gameEngine.systems.prestigeSystem.getPrestigeMultipliers();
+            if (prestigeMultipliers.resourceEfficiency !== 1) {
+                for (const [resource, amount] of Object.entries(finalCost)) {
+                    finalCost[resource] = Math.ceil(amount * prestigeMultipliers.resourceEfficiency);
+                }
+            }
         }
         
         // Check affordability with bankruptcy protection
-        if (!this.resourceManager.canAffordSafely(plantConfig.cost, true)) {
-            if (this.resourceManager.canAfford(plantConfig.cost)) {
+        if (!this.resourceManager.canAffordSafely(finalCost, true)) {
+            if (this.resourceManager.canAfford(finalCost)) {
                 this.showNotification('Невозможно купить - нужно сохранить ресурсы для базовых растений', 'warning');
             } else {
                 this.showNotification('Недостаточно ресурсов для этого растения', 'error');
@@ -243,7 +224,18 @@ class Shop {
             return false;
         }
         
-        return this.resourceManager.canAffordSafely(plantConfig.cost, true);
+        // Apply prestige resource efficiency if available
+        let finalCost = { ...plantConfig.cost };
+        if (this.gameEngine && this.gameEngine.systems && this.gameEngine.systems.prestigeSystem) {
+            const prestigeMultipliers = this.gameEngine.systems.prestigeSystem.getPrestigeMultipliers();
+            if (prestigeMultipliers.resourceEfficiency !== 1) {
+                for (const [resource, amount] of Object.entries(finalCost)) {
+                    finalCost[resource] = Math.ceil(amount * prestigeMultipliers.resourceEfficiency);
+                }
+            }
+        }
+        
+        return this.resourceManager.canAffordSafely(finalCost, true);
     }
     
     /**
@@ -260,7 +252,7 @@ class Shop {
             const affordabilityIndicator = shopItem.querySelector('.affordability-indicator');
             const purchaseButton = shopItem.querySelector('.shop-purchase-btn');
             
-            // Only update if elements exist (unlocked plants)
+            // Update affordability display
             if (affordabilityIndicator && purchaseButton) {
                 if (isAffordable) {
                     shopItem.classList.remove('unaffordable');

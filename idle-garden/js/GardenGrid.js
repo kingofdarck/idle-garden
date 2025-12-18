@@ -354,15 +354,17 @@ class GardenGrid {
      * Update all plants (called during game loop)
      * @param {number} deltaTime - Time elapsed since last update in milliseconds
      * @param {Object} upgrades - Current upgrade multipliers
+     * @param {Object} prestigeMultipliers - Prestige multipliers
+     * @param {number} fertilizerAmount - Current fertilizer amount
      * @returns {number} Total coins earned this update
      */
-    updateAllPlants(deltaTime, upgrades = {}) {
+    updateAllPlants(deltaTime, upgrades = {}, prestigeMultipliers = {}, fertilizerAmount = 0) {
         let totalCoinsEarned = 0;
         
         for (let i = 0; i < this.totalSlots; i++) {
             const plant = this.plants[i];
             if (plant) {
-                const coinsEarned = plant.update(deltaTime, upgrades);
+                const coinsEarned = plant.update(deltaTime, upgrades, prestigeMultipliers, fertilizerAmount);
                 if (coinsEarned > 0) {
                     totalCoinsEarned += coinsEarned;
                     
